@@ -1,0 +1,80 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TMP ATTRIBUTE TOOL</title>
+    <link rel="icon" type="image/svg+xml" href="/logo-attribute-control.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <style>
+    body {
+      font-family: 'roboto', sans-serif;
+      margin: 20px;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      margin-top: 50px;
+      font-weight: 500;
+    }
+
+    h1::after {
+      content: '';
+      display: block;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: #4b4a4a;
+      margin-top: 10px;
+    }
+    table {
+      width: 900px;
+      text-align: left;
+      border-collapse: collapse;
+      color: rgb(108, 108, 109);
+    }
+
+    table th {
+      border-bottom: 1px solid #4b4a4a;
+      padding-bottom: 1em;
+    }
+
+    table td {
+      padding: 0.5em 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    table a {
+      color: #1281d2;
+    }
+  </style>
+  <body>
+    <h1>Attribute Tool TMP</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>File Name</th>
+          <th>Last Modified</th>
+          <th>Size</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% listOfFile.sort((a, b) => new Date(b.lastModified) - new
+        Date(a.lastModified)).forEach(file => { %>
+        <tr>
+          <td class="name">
+            <a href="/uploads/<%=file.name %>" download><%= file.name%></a>
+          </td>
+          <td class="date"><%= file.lastModified%></td>
+          <td class="size"><%= file.size / 1000%> KB</td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </body>
+</html>

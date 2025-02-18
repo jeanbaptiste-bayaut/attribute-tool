@@ -1,0 +1,193 @@
+.upload-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 1em 1em;
+  grid-auto-flow: row;
+  grid-template-areas:
+    'products descriptions attributes'
+    'values products-attributes .';
+
+  form {
+    border: 1px solid #646cff;
+    padding: 1em;
+    border-radius: 8px;
+
+    a {
+      width: 100%;
+      text-align: center;
+      font-size: 0.8rem;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    input {
+      justify-self: center;
+    }
+  }
+}
+
+.products {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 1em 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    'label-products label-products label-products'
+    'file-products file-products file-products'
+    '. button-products .'
+    'download download download';
+  grid-area: products;
+}
+
+.label-products {
+  grid-area: label-products;
+}
+
+.file-products {
+  grid-area: file-products;
+}
+
+.button-products {
+  grid-area: button-products;
+}
+
+.descriptions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 1em 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    'label-descriptions label-descriptions label-descriptions'
+    'file-descriptions file-descriptions file-descriptions'
+    '. button-descriptions .'
+    'download download download';
+  grid-area: descriptions;
+}
+
+.label-descriptions {
+  grid-area: label-descriptions;
+}
+
+.file-descriptions {
+  grid-area: file-descriptions;
+}
+
+.button-descriptions {
+  grid-area: button-descriptions;
+}
+.upload-container {
+  .attributes {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 1em 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      'label-attributes label-attributes label-attributes'
+      'file-attributes file-attributes file-attributes'
+      '. button-attributes .'
+      'download download download';
+    grid-area: attributes;
+  }
+}
+
+.label-attributes {
+  grid-area: label-attributes;
+}
+
+.file-attributes {
+  grid-area: file-attributes;
+}
+
+.button-attributes {
+  grid-area: button-attributes;
+}
+
+.values {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 1em 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    'label-values label-values label-values'
+    'file-values file-values file-values'
+    '. button-values .'
+    'download download download';
+  grid-area: values;
+}
+
+.label-values {
+  grid-area: label-values;
+}
+
+.file-values {
+  grid-area: file-values;
+}
+
+.button-values {
+  grid-area: button-values;
+}
+
+.products-attributes {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 1em 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    'label-products-attributes label-products-attributes label-products-attributes'
+    'file-products-attributes file-products-attributes file-products-attributes'
+    '. button-products-attributes .'
+    'download download download';
+  grid-area: products-attributes;
+}
+
+.label-products-attributes {
+  grid-area: label-products-attributes;
+}
+
+.file-products-attributes {
+  grid-area: file-products-attributes;
+}
+
+.button-products-attributes {
+  grid-area: button-products-attributes;
+}
+
+.download {
+  grid-area: download;
+}
+
+@media screen and (max-width: 1440px) {
+  .upload-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 1em 1em;
+    grid-auto-flow: row;
+    grid-template-areas:
+      'products descriptions attributes'
+      'values products-attributes .';
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .upload-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 1em 1em;
+    grid-auto-flow: row;
+    grid-template-areas:
+      'products descriptions'
+      'attributes values'
+      'products-attributes .';
+  }
+}

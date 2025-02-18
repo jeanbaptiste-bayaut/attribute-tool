@@ -1,0 +1,64 @@
+nav {
+  width: 250px;
+  background-color: #192d33;
+  color: white;
+  transition: all 0.5s ease-in-out;
+  opacity: 0;
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  left: -250px;
+  z-index: 1000;
+
+  .close {
+    position: absolute;
+    cursor: pointer;
+    width: 100%;
+    text-align: end;
+
+    span {
+      padding: 0.5em;
+    }
+  }
+
+  h1 {
+    font-size: 2em;
+    margin: 0;
+    padding: 1em;
+    text-align: left;
+    color: white;
+  }
+
+  h1::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background-color: white;
+    margin-top: 0.5em;
+  }
+
+  ul {
+    margin-top: 1em;
+
+    li {
+      text-align: left;
+
+      a {
+        font-size: 1.5rem;
+        text-align: left;
+        color: white;
+      }
+
+      a:hover {
+        color: #979799;
+      }
+    }
+  }
+}
+
+.open {
+  opacity: 1;
+  transform: translateY(0);
+  transform: translateX(250px);
+}

@@ -1,0 +1,21 @@
+.menu-burger {
+  display: block;
+  padding-top: 1em;
+  padding-left: 1em;
+  transition: ease-in-out 1s;
+  cursor: pointer;
+  width: 50px;
+
+  .menu-burger__line {
+    width: 30px;
+    height: 2px;
+    background-color: #fbfbfd;
+    margin: 6px 0;
+    transition: 0.4s;
+  }
+}
+
+.hide {
+  display: none;
+  transition: ease-in-out 1s;
+}

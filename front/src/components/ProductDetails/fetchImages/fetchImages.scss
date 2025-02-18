@@ -1,0 +1,49 @@
+.visible {
+    display: block;
+}
+
+.hidden {
+    display: none;
+}
+
+.image {
+    position: relative;
+
+    button {
+        background-color: rgba(247, 245, 245, 0);
+        color: black;
+        padding: 0.2em 0.4em;
+        border:none;
+    }
+
+    button:focus {
+        outline: none;
+    }
+
+    button:hover {
+        border:none;
+    }
+
+    button:disabled {
+        color: rgb(211, 211, 211);
+    }
+}
+
+.arrow-button-next, .arrow-button-prev {
+    position: absolute;
+}
+
+.arrow-button-next {
+    top: 50%;
+    right: 0;
+}
+
+.arrow-button-prev {
+    top: 50%;
+    left: 0;
+}
+
+.no-img-callout {
+    color: rgb(0, 0, 0);
+    margin-top: 250px;
+}
