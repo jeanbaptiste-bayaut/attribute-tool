@@ -77,10 +77,17 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
     }
   }
 
-  const description = product.product_description
-    .replace(/([A-Z][a-zA-Z ]+):/g, ';$1:')
-    .split(';')
-    .filter((line) => line);
+  const description = `${product.product_description.replace(/\^/g, '\n\n')}`;
+  const regex = /([A-Z][a-z ]+[a-zA-Z]+:)/;
+  const descriptionFormat = description.split(regex).map((elt, index) =>
+    regex.test(elt) ? (
+      <span key={index} className="highlight">
+        {elt}{' '}
+      </span>
+    ) : (
+      elt
+    )
+  );
 
   return (
     <div className="image-description">
@@ -97,11 +104,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
       </div>
       <div className="description">
         <div className="text">
-          {description[0] !== '0' ? (
-            description.map((line, index) => <p key={index}>{line}</p>)
-          ) : (
-            <p>No description for this product</p>
-          )}
+          <pre>{descriptionFormat}</pre>
         </div>
         <button onClick={openModal}>Add comment</button>
         <Modal

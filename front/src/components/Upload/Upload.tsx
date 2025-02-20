@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { CSVLink } from 'react-csv';
 import Loader from '../Loader/Loader';
+import Modal from './Modal/Modal';
 
 interface AxiosError {
   response?: {
@@ -13,9 +14,15 @@ interface AxiosError {
   message: string;
 }
 
+type ModalProps = {
+  attribute: string;
+  value: string;
+}[];
+
 function Upload() {
   const [file, setFile] = useState<File | null>(null);
   const [statusUpload, setStatusUpload] = useState(false);
+  const [list, setList] = useState<ModalProps>([]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -56,6 +63,10 @@ function Upload() {
         }
       );
 
+      if (endpoint === 'products/attributes/values' && upload.data.length > 0) {
+        setList(upload.data);
+      }
+
       if (upload.data.existingValues) {
         alert(
           `${endpoint} file uploaded successfully with existing values: \n
@@ -90,6 +101,9 @@ function Upload() {
       <h1>Upload data</h1>
       {statusUpload && <Loader />}
       <div className="upload-container">
+        {list.length > 0 && !statusUpload ? (
+          <Modal list={list} setList={setList} />
+        ) : null}
         <form
           id="products"
           className="products"

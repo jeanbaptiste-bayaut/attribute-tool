@@ -15,7 +15,7 @@
 
 .image {
   grid-area: image;
-  width: 400px;
+  width: 370px;
   height: 500px;
   background-color: lightgray;
   margin: 1em 0 0 1em;
@@ -42,8 +42,19 @@
     padding: 0 1em;
   }
 
-  p {
-    text-align: justify;
+  pre {
+    text-align: left;
+    padding: 10px;
+    word-break: break-word;
+    white-space: pre-wrap;
+    font-size: 16px;
+    max-width: 400px;
+    line-height: 1.3em;
+  }
+
+  .highlight {
+    font-weight: bold;
+    font-size: 18px;
   }
 
   button {

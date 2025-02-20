@@ -26,7 +26,6 @@ export default class UploadProductDataMapper extends CoreDataMapper {
 
       for await (const row of readStream) {
         const cleanedRow = cleanKeys(row);
-        console.log(cleanedRow);
 
         if (
           !Object.keys(cleanedRow)[0]
@@ -79,6 +78,7 @@ export default class UploadProductDataMapper extends CoreDataMapper {
     try {
       const results = [];
       const promises = [];
+      let valueNotFoundList = [];
 
       await new Promise((resolve, reject) => {
         fs.createReadStream(filePath)
@@ -155,28 +155,28 @@ export default class UploadProductDataMapper extends CoreDataMapper {
             );
 
             if (!valueId.rows[0] || !valueId.rows[0].id) {
-              throw new Error(
-                `No value found for "${row[
-                  key
-                ].toLowerCase()}" in attribute ${keyFormatted}.`
-              );
+              valueNotFoundList.push({
+                attribute: keyFormatted,
+                value: row[key],
+              });
+            } else {
+              const query = `
+              INSERT INTO "product_has_attribute" ("product_id", "attribute_id", "value_id")
+              VALUES ($1, $2, $3)
+              ON CONFLICT ("product_id", "attribute_id", "value_id") 
+              DO NOTHING;`;
+
+              await this.client.query(query, [
+                row.style_id,
+                attributeId.rows[0].id,
+                valueId.rows[0].id,
+              ]);
             }
-
-            const query = `
-                INSERT INTO "product_has_attribute" ("product_id", "attribute_id", "value_id")
-                VALUES ($1, $2, $3)
-                ON CONFLICT ("product_id", "attribute_id", "value_id") 
-                DO NOTHING;`;
-
-            await this.client.query(query, [
-              row.style_id,
-              attributeId.rows[0].id,
-              valueId.rows[0].id,
-            ]);
           }
         }
       }
       console.log('File uploaded and processed successfully');
+      return valueNotFoundList;
     } catch (error) {
       console.error(error);
       throw new Error(error.message);

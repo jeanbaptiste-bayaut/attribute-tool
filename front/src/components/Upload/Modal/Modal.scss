@@ -1,0 +1,26 @@
+.list-container {
+    width: 100%;
+    position: absolute;
+    background-color: rgba(36, 28, 28, 0.735);
+    border-radius: 8px;
+    color: black;
+    text-align: left;
+    padding: 1em;
+
+    ul {
+        position:static;        
+        background-color: white;
+        margin: 0 auto;
+        border-radius: 8px;
+        width: 400px;
+        height: 500px;
+        overflow-y: auto;
+    }
+
+    button {
+       position: absolute;
+       padding: 0.2em 0.6em;
+       margin-top: 10px;
+       margin-left: 350px;
+    }
+}
