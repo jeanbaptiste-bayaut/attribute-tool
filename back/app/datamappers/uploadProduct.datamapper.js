@@ -33,7 +33,7 @@ export default class UploadProductDataMapper extends CoreDataMapper {
             .includes('style', 'color', 'name', 'image_url', 'season')
         ) {
           throw new Error(
-            'header must include "style", "color", "name", "image_url"'
+            'header must include "style", "color", "name", "image_url", "season"'
           );
         }
         results.push(cleanedRow);

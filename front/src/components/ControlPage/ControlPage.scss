@@ -1,3 +1,8 @@
+.header-container {
+  display: flex;
+  width: 100%;
+}
+
 .grid-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -29,6 +34,7 @@
 
 .content {
   .filter-form {
+    width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 1em;

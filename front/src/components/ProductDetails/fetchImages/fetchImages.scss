@@ -47,3 +47,27 @@
     color: rgb(0, 0, 0);
     margin-top: 250px;
 }
+
+.option-color {
+    display: flex;
+    gap: 0.5em;
+    margin: 0.5em 0;
+
+    figure {
+        width: 80px;
+        height: 100px;
+        margin: 0;
+
+        img {
+            height: auto;
+            width: 100%;
+            object-fit: cover;
+        }
+    }
+
+    .color-button {
+        color: white;
+        padding: 0;
+    }
+
+}

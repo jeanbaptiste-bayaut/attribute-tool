@@ -45,6 +45,8 @@ function Upload() {
     }
 
     const formData = new FormData();
+    console.log('formData', formData);
+
     formData.append(`${endpoint.replace(/\//g, '-')}`, file);
 
     try {

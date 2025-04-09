@@ -1,3 +1,4 @@
+import MenuBurger from '../MenuBurger/MenuBurger';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './ControlPage.scss';
@@ -219,7 +220,8 @@ function ControlPage() {
   return (
     <>
       <header>
-        <div>
+        <div className="header-container">
+          <MenuBurger />
           <form onSubmit={handleFilterSubmit} className="filter-form">
             <select name="brand" onChange={handleChangeSelectBrand}>
               <option defaultValue="">Select a brand</option>

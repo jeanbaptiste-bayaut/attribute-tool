@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import './fetchImages.scss';
 
 type imagesProps = {
@@ -14,55 +14,65 @@ type FetchImagesProps = {
 function FetchImages({ style, brand, color }: FetchImagesProps) {
   const [images, setImages] = useState<imagesProps>([]);
   const [imageIndex, setImageIndex] = useState(0);
-
-  const urlConstructor = {
-    urlbase: `https://images.napali.app/global/${brand}-products/all/default/hi-res/`,
-    views: [
-      'frt1',
-      'frt2',
-      'frt3',
-      'frt4',
-      'frt5',
-      'frt6',
-      'bck1',
-      'bck2',
-      'dtl1',
-      'dtl2',
-    ],
-    shoot: [',f_', ',w_', ',v_'],
-    extension: '.jpg',
-  };
+  const [availableColors, setAvailableColors] = useState([
+    {
+      color: '',
+      style: '',
+    },
+  ]);
 
   async function getImages({ style, brand, color }: FetchImagesProps) {
-    console.log('ici', { style, brand, color });
-    const urls: string[] = [];
-    urlConstructor.shoot?.forEach((elt: string) => {
-      urlConstructor.views?.forEach((view: string) => {
-        const url = `${
-          urlConstructor.urlbase
-        }${style.toLocaleLowerCase()}_${brand}${elt}${color.toLocaleLowerCase()}_${view}${
-          urlConstructor.extension
-        }`;
-        urls.push(url);
-      });
-    });
+    const urlbase = `https://images.napali.app/global/${brand}-products/all/default/hi-res/`;
 
-    urls.forEach(async (url) => {
-      await fetch(url).then((response) => {
-        console.log(response.status);
+    try {
+      const response = await axios.get(
+        `${
+          process.env.NODE_ENV === 'production'
+            ? import.meta.env.VITE_API_URL
+            : import.meta.env.VITE_API_URL_DEV
+        }/api/images/${brand}/${style}/${color}`
+      );
 
-        if (response.status === 200) {
-          setImages((prevState) => [...prevState, { url: url }]);
+      if (!response.data) {
+        throw new Error('No images found');
+      }
+
+      const imageUrls = response.data.images_name.map(
+        (image: { name: string }) => {
+          return { url: urlbase + image.name };
         }
-      });
-    });
+      );
+
+      setImages(imageUrls);
+      setImageIndex(0);
+    } catch (error) {
+      console.error('Error fetching images:', error);
+    }
+  }
+
+  async function getAvailableColors({ style }: FetchImagesProps) {
+    try {
+      const response = await axios.get(
+        `${
+          process.env.NODE_ENV === 'production'
+            ? import.meta.env.VITE_API_URL
+            : import.meta.env.VITE_API_URL_DEV
+        }/api/images/colors/${style}/`
+      );
+
+      if (response.data) {
+        setAvailableColors(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching available colors:', error);
+    }
   }
 
   useEffect(() => {
     setImages([]); // Clear previous images
     getImages({ style, brand, color });
+    getAvailableColors({ style, brand, color });
     setImageIndex(0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [style, brand, color]);
 
   return (
@@ -93,6 +103,32 @@ function FetchImages({ style, brand, color }: FetchImagesProps) {
       >
         {'<'}
       </button>
+      <div className="option-color">
+        {availableColors.map((elt, index) => (
+          <>
+            <button
+              key={index}
+              className={`color-button`}
+              onClick={() => {
+                setImageIndex(0);
+                getImages({
+                  style: style,
+                  brand,
+                  color: elt.color,
+                });
+              }}
+            >
+              <figure>
+                <img
+                  src={`https://images.napali.app/_/${brand}/hires/${style}_${elt.color}.jpg`}
+                  alt="vignette"
+                />
+                <figcaption>{elt.color}</figcaption>
+              </figure>
+            </button>
+          </>
+        ))}
+      </div>
     </div>
   );
 }

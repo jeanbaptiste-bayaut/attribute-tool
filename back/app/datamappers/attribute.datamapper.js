@@ -62,6 +62,8 @@ export default class AttributeDataMapper extends CoreDatamapper {
       await pipelineAsync(
         fs.createReadStream(filePath),
         csvParser({ separator: ';' }).on('data', (row) => {
+          console.log(row);
+
           const cleanedRow = cleanKeys(row);
           results.push(cleanedRow);
 

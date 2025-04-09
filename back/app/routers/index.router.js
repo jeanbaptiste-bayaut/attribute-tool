@@ -6,6 +6,7 @@ import ValueRouter from './value.router.js';
 import UploadRouter from './upload.router.js';
 import ExportRouter from './export.router.js';
 import TmpRouter from './tmp.router.js';
+import ImageRouter from './image.router.js';
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use(ValueRouter);
 router.use(UploadRouter);
 router.use(ExportRouter);
 router.use(TmpRouter);
+router.use(ImageRouter);
 
 export default router;
