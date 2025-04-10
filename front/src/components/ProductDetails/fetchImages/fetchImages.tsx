@@ -84,7 +84,7 @@ function FetchImages({ style, brand, color }: FetchImagesProps) {
       >
         {'>'}
       </button>
-      {images.length > 1 ? (
+      {images.length >= 1 ? (
         images.map((image, index) => (
           <img
             key={index}

@@ -23,8 +23,8 @@ const customStyles = {
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
-    width: '300px',
-    height: '400px',
+    width: '500px',
+    height: '350px',
   },
 };
 
@@ -112,6 +112,8 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
           onRequestClose={closeModal}
           contentLabel="Example Modal"
           style={customStyles}
+          className="Modal"
+          overlayClassName="Overlay"
         >
           <button onClick={closeModal}>x</button>
           <form onSubmit={handleSubmit} className="form-description">

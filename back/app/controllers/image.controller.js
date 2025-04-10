@@ -7,6 +7,7 @@ const __dirname = path.resolve();
 export default class ImageController {
   static async transformToJson(req, res) {
     const { brand, pattern, color } = req.params;
+
     try {
       const file = fs
         .readdirSync(path.join(__dirname, 'app/data'))
@@ -38,13 +39,12 @@ export default class ImageController {
         }
       });
 
-      const productInfos = jsonArray.find((product) => {
-        return (
+      const productInfos = jsonArray.find(
+        (product) =>
           product.brand === brand &&
           product.pattern === pattern &&
           product.color === color
-        );
-      });
+      );
 
       res.json(productInfos);
     } catch (error) {
