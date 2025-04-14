@@ -20,11 +20,25 @@ function FetchImages({ style, brand, color }: FetchImagesProps) {
       style: '',
     },
   ]);
+  const [displayed, setDisplayed] = useState([1, 2, 3]);
+
+  function handleSliderLeft() {
+    const newDisplayed = displayed.slice(0, displayed.length - 1);
+    newDisplayed.unshift(newDisplayed[0] - 1);
+    setDisplayed(newDisplayed);
+  }
+
+  function handleSliderRight() {
+    const newDisplayed = displayed.slice(1);
+    newDisplayed.push(newDisplayed[newDisplayed.length - 1] + 1);
+    setDisplayed(newDisplayed);
+  }
 
   async function getImages({ style, brand, color }: FetchImagesProps) {
     const urlbase = `https://images.napali.app/global/${brand}-products/all/default/hi-res/`;
 
     try {
+      let imageUrls = [];
       const response = await axios.get(
         `${
           process.env.NODE_ENV === 'production'
@@ -34,15 +48,14 @@ function FetchImages({ style, brand, color }: FetchImagesProps) {
       );
 
       if (!response.data) {
-        throw new Error('No images found');
-      }
-
-      const imageUrls = response.data.images_name.map(
-        (image: { name: string }) => {
+        imageUrls.push({
+          url: `https://images.napali.app/_/${brand}/hires/${style}_${color}.jpg`,
+        });
+      } else {
+        imageUrls = response.data.images_name.map((image: { name: string }) => {
           return { url: urlbase + image.name };
-        }
-      );
-
+        });
+      }
       setImages(imageUrls);
       setImageIndex(0);
     } catch (error) {
@@ -73,6 +86,7 @@ function FetchImages({ style, brand, color }: FetchImagesProps) {
     getImages({ style, brand, color });
     getAvailableColors({ style, brand, color });
     setImageIndex(0);
+    setDisplayed([1, 2, 3]);
   }, [style, brand, color]);
 
   return (
@@ -94,7 +108,9 @@ function FetchImages({ style, brand, color }: FetchImagesProps) {
           />
         ))
       ) : (
-        <p className="no-img-callout">No images found</p>
+        <div className="no-img">
+          <p className="no-img-callout">No images found</p>
+        </div>
       )}
       <button
         onClick={() => setImageIndex(imageIndex - 1)}
@@ -104,30 +120,44 @@ function FetchImages({ style, brand, color }: FetchImagesProps) {
         {'<'}
       </button>
       <div className="option-color">
-        {availableColors.map((elt, index) => (
-          <>
-            <button
-              key={index}
-              className={`color-button`}
-              onClick={() => {
-                setImageIndex(0);
-                getImages({
-                  style: style,
-                  brand,
-                  color: elt.color,
-                });
-              }}
-            >
-              <figure>
-                <img
-                  src={`https://images.napali.app/_/${brand}/hires/${style}_${elt.color}.jpg`}
-                  alt="vignette"
-                />
-                <figcaption>{elt.color}</figcaption>
-              </figure>
-            </button>
-          </>
-        ))}
+        {availableColors.length > 3 ? (
+          <button onClick={handleSliderLeft} disabled={displayed[0] == 1}>
+            {'<'}
+          </button>
+        ) : null}
+        {availableColors.map((elt, index) => {
+          if (displayed.includes(index + 1))
+            return (
+              <button
+                key={index}
+                className={`color-button`}
+                onClick={() => {
+                  setImageIndex(0);
+                  getImages({
+                    style: style,
+                    brand,
+                    color: elt.color,
+                  });
+                }}
+              >
+                <figure key={index}>
+                  <img
+                    src={`https://images.napali.app/_/${brand}/hires/${style}_${elt.color}.jpg`}
+                    alt="vignette"
+                  />
+                  <figcaption>{elt.color}</figcaption>
+                </figure>
+              </button>
+            );
+        })}
+        {availableColors.length > 3 ? (
+          <button
+            onClick={handleSliderRight}
+            disabled={displayed[displayed.length - 1] >= availableColors.length}
+          >
+            {'>'}
+          </button>
+        ) : null}
       </div>
     </div>
   );

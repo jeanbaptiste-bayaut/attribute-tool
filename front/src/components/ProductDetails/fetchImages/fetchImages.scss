@@ -27,6 +27,22 @@
     button:disabled {
         color: rgb(211, 211, 211);
     }
+
+    .no-img {
+        background-color: #F6F6F6;
+        width: 320px;
+        height: 430px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+    }
+
+    .no-img-callout {
+        color: rgb(0, 0, 0);
+        margin: 0;
+    }
 }
 
 .arrow-button-next, .arrow-button-prev {
@@ -43,12 +59,8 @@
     left: 0;
 }
 
-.no-img-callout {
-    color: rgb(0, 0, 0);
-    margin-top: 250px;
-}
-
 .option-color {
+    position: absolute;
     display: flex;
     gap: 0.5em;
     margin: 0.5em 0;
@@ -68,6 +80,14 @@
     .color-button {
         color: white;
         padding: 0;
+    }
+
+    button {
+        color: rgba(255, 254, 254, 0.893);
+    }
+
+    button:disabled {
+        color: rgba(71, 70, 70, 0.893);
     }
 
 }
