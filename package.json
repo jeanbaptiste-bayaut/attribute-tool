@@ -11,10 +11,10 @@
     "build": "cd front && tsc -b && vite build",
     "start": "ENV=production && cd back && npm i && node index.js",
     "create-db": "psql -p 5433 -U postgres -f ./app/data/create-database.sql",
-    "create-db-mysql": "mysql -u root -p < ./app/data/create-database-mysql.sql",
+    "create-db-mysql": "mysql -u root -p < ./app/data/create-database-mysql.sql && echo DB Created",
     "create-db-prod": "-f ./app/data/create-database.sql",
     "create-tables": "psql -p 5433 -U postgres -d attribute-tool -f ./app/data/create-tables.sql",
-    "create-tables-mysql": "mysql -u root -p < ./app/data/create-tables-mysql.sql"
+    "create-tables-mysql": "mysql -u root -p < ./back/app/data/create-tables-mysql.sql && echo Tables created"
   },
   "keywords": [],
   "author": "",
@@ -33,6 +33,8 @@
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.14.0",
     "node-cron": "^3.0.3",
     "pg": "^8.13.0",
     "react": "^18.3.1",

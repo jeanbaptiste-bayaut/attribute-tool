@@ -37,9 +37,8 @@ export default class AttributeDataMapper extends CoreDatamapper {
       }
 
       const insertQuery = `
-      INSERT INTO "attribute" ("name")
-      VALUES ($1)
-      RETURNING id;
+      INSERT INTO attribute (name)
+      VALUES (?);
     `;
 
       for (const row of results) {
@@ -58,36 +57,36 @@ export default class AttributeDataMapper extends CoreDatamapper {
     try {
       const results = [];
       const selectPromises = [];
+      const noExistingAttributes = [];
 
       await pipelineAsync(
         fs.createReadStream(filePath),
         csvParser({ separator: ';' }).on('data', (row) => {
-          console.log(row);
-
           const cleanedRow = cleanKeys(row);
           results.push(cleanedRow);
 
           selectPromises.push(
             this.client
-              .query(`SELECT "id" FROM "attribute" WHERE "name" = $1;`, [
+              .query(`SELECT id FROM attribute WHERE name = ?;`, [
                 row.attribute,
               ])
               .then((result) => {
-                if (result.rows.length > 0) {
-                  const id = result.rows[0].id;
+                if (result[0].length > 0) {
+                  const id = result[0][0].id;
+
                   cleanedRow['attribute_id'] = id;
                 } else {
-                  throw new Error(
-                    `No existing attribute for: ${row.attribute}`
-                  );
+                  noExistingAttributes.push(row.attribute);
                 }
               })
               .catch((error) => {
                 console.error(
-                  `Erreur lors de la récupération de l'id de l'attribut: ${row.attribute}`,
+                  `Les attributs suvants n'existent pas: ${noExistingAttributes}`,
                   error
                 );
-                throw error;
+                throw new Error(
+                  `Les attributs suvants n'existent pas: ${noExistingAttributes}`
+                );
               })
           );
         })
@@ -95,28 +94,32 @@ export default class AttributeDataMapper extends CoreDatamapper {
 
       await Promise.all(selectPromises);
 
+      const resultFiltered = results.filter((row) => {
+        return !noExistingAttributes.includes(row.attribute);
+      });
+
       await this.client.query('BEGIN');
       try {
-        const queryInsert = `
-          INSERT INTO "value" ("name", "attribute_id") 
-          VALUES ($1, $2)
-          ON CONFLICT ("name", "attribute_id") 
-          DO NOTHING
-          RETURNING id;`;
+        const queryCheckIfExists = `
+        SELECT id FROM value 
+        WHERE name = ?
+          AND attribute_id = ?`;
 
-        const queryCheckIfExists = `SELECT "id" FROM "value" WHERE "name" = $1 AND "attribute_id" = $2`;
+        const queryInsert = `
+          INSERT INTO value (name, attribute_id) 
+          VALUES (?, ?);`;
 
         const insertPromises = [];
         const existingValues = [];
 
-        for (const row of results) {
+        for (const row of resultFiltered) {
           for (const key in row) {
             if (key.startsWith('value') && row[key] !== '') {
-              const checkIfExists = await this.client.query(
+              const [checkIfExists] = await this.client.query(
                 queryCheckIfExists,
                 [row[key], row.attribute_id]
               );
-              if (checkIfExists.rows.length === 0) {
+              if (checkIfExists.length === 0) {
                 console.log(
                   `Attempting to insert: ${row[key]} with attribute_id: ${row.attribute_id}`
                 );
@@ -124,9 +127,9 @@ export default class AttributeDataMapper extends CoreDatamapper {
                   this.client
                     .query(queryInsert, [row[key], row.attribute_id])
                     .then((res) => {
-                      if (res.rows.length > 0) {
+                      if (res.length > 0) {
                         console.log(
-                          `Successfully inserted: ${row[key]}, assigned ID: ${res.rows[0].id}`
+                          `Successfully inserted: ${row[key]}, assigned ID: ${res[0].id}`
                         );
                       } else {
                         console.warn(
@@ -165,7 +168,7 @@ export default class AttributeDataMapper extends CoreDatamapper {
 
         await this.client.query('COMMIT');
         console.log('File uploaded and processed successfully');
-        return { existingValues };
+        return { existingValues, noExistingAttributes };
       } catch (error) {
         await this.client.query('ROLLBACK');
         console.error('Transaction error, rolling back:', error);

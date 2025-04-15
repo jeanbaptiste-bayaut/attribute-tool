@@ -40,35 +40,34 @@ export default class DescriptionDataMapper extends CoreDataMapper {
       }
 
       const insertQuery = `
-        INSERT INTO "description" ("description", "style")
-        VALUES ($1, $2)
-        RETURNING id;
+        INSERT INTO description (description, style)
+        VALUES (?, ?);
       `;
 
       for (const row of results) {
-        const isStyleExists = await this.client.query(
-          `SELECT * FROM "product" WHERE "style"=$1`,
+        const [isStyleExists] = await this.client.query(
+          `SELECT * FROM product WHERE style=?`,
           [row.style]
         );
 
-        if (!isStyleExists.rows[0]) {
+        if (!isStyleExists[0]) {
           throw new Error(`style ${row.style} does not exist`);
         }
         await this.client.query(insertQuery, [row.description, row.style]);
       }
 
-      const resultSelectDescStyleId = await this.client.query(`
-        SELECT "product"."style", "description"."id" 
-        FROM "product"
-        JOIN "description" ON "product"."style" = "description"."style";
+      const [resultSelectDescStyleId] = await this.client.query(`
+        SELECT product.style, description.id 
+        FROM product
+        JOIN description ON product.style = description.style;
       `);
 
-      styleWithDescriptionId.push(...resultSelectDescStyleId.rows);
+      styleWithDescriptionId.push(...resultSelectDescStyleId);
 
       const updateDescIdInProductQuery = `
-        UPDATE "product"
-        SET "description_id" = $1
-        WHERE "style" = $2;
+        UPDATE product
+        SET description_id = ?
+        WHERE style = ?;
       `;
 
       for (const row of styleWithDescriptionId) {
@@ -88,13 +87,12 @@ export default class DescriptionDataMapper extends CoreDataMapper {
   }
 
   static async addComment(comment, style) {
-    const result = await this.client.query(
-      `UPDATE "${this.tableName}" SET "comment" = $1
-      WHERE "style"=$2
-      RETURNING *;`,
+    const [result] = await this.client.query(
+      `UPDATE ${this.tableName} SET comment = ?
+      WHERE style=?;`,
       [comment, style]
     );
 
-    return result.rows[0];
+    return result[0];
   }
 }

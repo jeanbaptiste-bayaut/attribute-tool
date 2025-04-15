@@ -39,21 +39,18 @@ export default class UploadProductDataMapper extends CoreDataMapper {
         results.push(cleanedRow);
       }
 
-      console.log('ici');
-
       const insertQuery = `
-      INSERT INTO "product" ("style", "color", "name", "image_url", "season")
-      VALUES ($1, $2, $3, $4, $5)
-      RETURNING id;
+      INSERT INTO product (style, color, name, image_url, season)
+      VALUES (?, ?, ?, ?, ?);
     `;
 
       for (const row of results) {
-        const isStyleExists = await this.client.query(
-          `SELECT * FROM "product" WHERE "style"=$1`,
+        const [isStyleExists] = await this.client.query(
+          `SELECT * FROM product WHERE style=?`,
           [row.style]
         );
 
-        if (isStyleExists.rows[0]) {
+        if (isStyleExists[0]) {
           throw new Error(`style ${row.style} already exists`);
         }
 
@@ -89,12 +86,10 @@ export default class UploadProductDataMapper extends CoreDataMapper {
 
             promises.push(
               this.client
-                .query(`SELECT "id" FROM "product" WHERE "style" = $1;`, [
-                  row.style,
-                ])
+                .query(`SELECT id FROM product WHERE style = ?;`, [row.style])
                 .then((result) => {
-                  if (result.rows.length > 0) {
-                    const id = result.rows[0].id;
+                  if (result[0].length > 0) {
+                    const id = result[0][0].id;
                     cleanedRow['style_id'] = id;
                   } else {
                     return;
@@ -140,36 +135,41 @@ export default class UploadProductDataMapper extends CoreDataMapper {
               row[key] = row[key].replace(/ +/g, '');
             }
 
-            const attributeId = await this.client.query(
-              `SELECT "id" FROM "attribute" WHERE "name" = $1;`,
+            const [attributeId] = await this.client.query(
+              `SELECT id FROM attribute WHERE name = ?;`,
               [keyFormatted.toLowerCase()]
             );
 
-            if (!attributeId.rows[0]) {
+            if (!attributeId[0]) {
               throw new Error(`No attribute found for "${keyFormatted}".`);
             }
 
-            const valueId = await this.client.query(
-              `SELECT "id" FROM "value" WHERE "name" = $1;`,
+            const [valueId] = await this.client.query(
+              `SELECT id FROM value WHERE name = ?;`,
               [row[key].toLowerCase()]
             );
 
-            if (!valueId.rows[0] || !valueId.rows[0].id) {
-              valueNotFoundList.push({
-                attribute: keyFormatted,
-                value: row[key],
-              });
+            if (!valueId[0] || !valueId[0].id) {
+              if (
+                !valueNotFoundList.find(
+                  (item) =>
+                    item.attribute === keyFormatted && item.value === row[key]
+                )
+              ) {
+                valueNotFoundList.push({
+                  attribute: keyFormatted,
+                  value: row[key],
+                });
+              }
             } else {
               const query = `
-              INSERT INTO "product_has_attribute" ("product_id", "attribute_id", "value_id")
-              VALUES ($1, $2, $3)
-              ON CONFLICT ("product_id", "attribute_id", "value_id") 
-              DO NOTHING;`;
+              INSERT IGNORE INTO product_has_attribute (product_id, attribute_id, value_id)
+              VALUES (?, ?, ?);`;
 
               await this.client.query(query, [
                 row.style_id,
-                attributeId.rows[0].id,
-                valueId.rows[0].id,
+                attributeId[0].id,
+                valueId[0].id,
               ]);
             }
           }
