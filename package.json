@@ -11,8 +11,10 @@
     "build": "cd front && tsc -b && vite build",
     "start": "ENV=production && cd back && npm i && node index.js",
     "create-db": "psql -p 5433 -U postgres -f ./app/data/create-database.sql",
+    "create-db-mysql": "mysql -u root -p < ./app/data/create-database-mysql.sql",
     "create-db-prod": "-f ./app/data/create-database.sql",
-    "create-tables": "psql -p 5433 -U postgres -d attribute-tool -f ./app/data/create-tables.sql"
+    "create-tables": "psql -p 5433 -U postgres -d attribute-tool -f ./app/data/create-tables.sql",
+    "create-tables-mysql": "mysql -u root -p < ./app/data/create-tables-mysql.sql"
   },
   "keywords": [],
   "author": "",
