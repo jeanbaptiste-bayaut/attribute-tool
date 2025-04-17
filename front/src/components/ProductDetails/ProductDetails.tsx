@@ -3,6 +3,8 @@ import { useState } from 'react';
 import Modal from 'react-modal';
 import axios from 'axios';
 import FetchImages from './fetchImages/fetchImages';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 
 interface ProductDetailsProps {
   product: {
@@ -33,6 +35,7 @@ Modal.setAppElement('#root');
 const ProductDetails = ({ product }: ProductDetailsProps) => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState('');
+  const [commentSent, setCommentSent] = useState(false);
 
   if (!product) {
     // Si le produit n'est pas encore défini, on peut afficher un chargement ou rien
@@ -68,10 +71,14 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
       );
 
       if (result.status === 200) {
-        alert('Comment sent');
+        setCommentSent(!commentSent);
         setFormData('');
         closeModal();
       }
+
+      setTimeout(() => {
+        setCommentSent(false);
+      }, 2000);
     } catch (error) {
       console.error(error);
     }
@@ -106,7 +113,16 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
         <div className="text">
           <pre>{descriptionFormat}</pre>
         </div>
-        <button onClick={openModal}>Add comment</button>
+        <div className="comment-button">
+          <button onClick={openModal}>Add comment</button>
+          {commentSent && (
+            <FontAwesomeIcon
+              icon={faCircleCheck}
+              size="2xl"
+              style={{ color: '#63E6BE' }}
+            />
+          )}
+        </div>
         <Modal
           isOpen={modalIsOpen}
           onRequestClose={closeModal}

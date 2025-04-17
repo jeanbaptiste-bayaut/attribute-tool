@@ -3,26 +3,42 @@ import CoreDataMapper from './core.datamapper.js';
 export default class ProductHasAttributeDataMapper extends CoreDataMapper {
   static tableName = 'product_has_attribute';
 
-  static async updateStatus(productId, attributeId, valueId) {
-    await this.client.query(
-      `
+  static async updateStatus(data) {
+    try {
+      data.forEach(async (product) => {
+        const [update] = await this.client.query(
+          `
       UPDATE ${this.tableName}
-      SET status= FALSE 
+      SET status= FALSE
       WHERE product_id = ?
-      AND attribute_id = ?
-      AND value_id = ?;
+      AND attribute_id = (SELECT id from attribute WHERE attribute.name = ?)
+      AND value_id = 
+        (SELECT id from value 
+        WHERE value.name = ? 
+        AND value.attribute_id = (SELECT id from attribute WHERE attribute.name = ?)
+        );
       `,
-      [productId, attributeId, valueId]
-    );
+          [
+            product.product_id,
+            product.attribute_name,
+            product.attribute_name,
+            product.value_name,
+          ]
+        );
 
-    const [result] = await this.client.query(
-      `SELECT id FROM ${this.tableName}
-      WHERE product_id = ?
-      AND attribute_id = ?
-      AND value_id = ?;`,
-      [productId, attributeId, valueId]
-    );
+        console.log('Update result:', update);
 
-    return result[0];
+        if (update.affectedRows === 0) {
+          return { message: 'No rows updated' };
+        }
+      });
+
+      return {
+        message: 'Status updated successfully',
+      };
+    } catch (error) {
+      console.error('Error updating status:', error);
+      throw error;
+    }
   }
 }

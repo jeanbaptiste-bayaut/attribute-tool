@@ -14,7 +14,7 @@ router.get(
   ValueController.getSeasonsSList.bind(ValueController)
 );
 router.patch(
-  '/api/attributes/status/:productId/:attributeId/:valueId',
+  '/api/attributes/status',
   ProductHasAttributeController.updateStatus.bind(ProductHasAttributeController)
 );
 
