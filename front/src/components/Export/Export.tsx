@@ -1,5 +1,6 @@
 import './Export.scss';
 import axios from 'axios';
+import MenuBurger from '../MenuBurger/MenuBurger';
 import { useEffect, useState } from 'react';
 import { CSVLink } from 'react-csv';
 
@@ -80,44 +81,47 @@ function Export() {
   }, []);
 
   return (
-    <div className="parent-container">
-      <h1>Export</h1>
-      <form onSubmit={handleFilterSubmit} className="filter-form-export">
-        <select name="season" onChange={handleChangeSelectSeason}>
-          <option defaultValue="">Select a season</option>
-          {seasons.map((season) => (
-            <option key={season.season_name} value={season.season_name}>
-              {season.season_name}
-            </option>
-          ))}
-        </select>
-        <button type="submit">Filter</button>
-      </form>
-      <div className="export-container">
-        <div className="export-attributes">
-          <h2>Export list of attributes to edit</h2>
-          <CSVLink
-            data={stylesWithAttributesToEdit}
-            filename={`at-attributes-export${currentDate}.csv`}
-            separator={';'}
-            style={{ display: activeFilter ? 'block' : 'none' }}
-          >
-            Download me
-          </CSVLink>
-        </div>
-        <div className="export-descriptions">
-          <h2>Export list of descriptions to edit</h2>
-          <CSVLink
-            data={stylesWithDescriptionsComment}
-            filename={`at-descriptions-export${currentDate}.csv`}
-            separator={';'}
-            style={{ display: activeFilter ? 'block' : 'none' }}
-          >
-            Download me
-          </CSVLink>
+    <>
+      <MenuBurger />
+      <div className="parent-container">
+        <h1>Export</h1>
+        <form onSubmit={handleFilterSubmit} className="filter-form-export">
+          <select name="season" onChange={handleChangeSelectSeason}>
+            <option defaultValue="">Select a season</option>
+            {seasons.map((season) => (
+              <option key={season.season_name} value={season.season_name}>
+                {season.season_name}
+              </option>
+            ))}
+          </select>
+          <button type="submit">Filter</button>
+        </form>
+        <div className="export-container">
+          <div className="export-attributes">
+            <h2>Export list of attributes to edit</h2>
+            <CSVLink
+              data={stylesWithAttributesToEdit}
+              filename={`at-attributes-export${currentDate}.csv`}
+              separator={';'}
+              style={{ display: activeFilter ? 'block' : 'none' }}
+            >
+              Download me
+            </CSVLink>
+          </div>
+          <div className="export-descriptions">
+            <h2>Export list of descriptions to edit</h2>
+            <CSVLink
+              data={stylesWithDescriptionsComment}
+              filename={`at-descriptions-export${currentDate}.csv`}
+              separator={';'}
+              style={{ display: activeFilter ? 'block' : 'none' }}
+            >
+              Download me
+            </CSVLink>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

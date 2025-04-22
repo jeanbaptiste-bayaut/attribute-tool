@@ -145,7 +145,7 @@ function ControlPage() {
       setValidated(false);
       getImagesUrl(selectedBrand, selectedSeason);
       setCurrentIndex(currentIndex + 1);
-    }, 2000);
+    }, 1000);
   };
 
   const handleFailButton = async () => {
@@ -175,7 +175,7 @@ function ControlPage() {
           setattributeListToEdit([]);
           getImagesUrl(selectedBrand, selectedSeason);
           setCurrentIndex(currentIndex + 1);
-        }, 2000);
+        }, 1000);
       } catch (error) {
         alert(
           `Erreur lors de la mise à jour du produit ${products[currentIndex].product_name}`

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { CSVLink } from 'react-csv';
 import Loader from '../Loader/Loader';
 import Modal from './Modal/Modal';
+import MenuBurger from '../MenuBurger/MenuBurger';
 
 interface AxiosError {
   response?: {
@@ -116,6 +117,7 @@ function Upload() {
 
   return (
     <>
+      <MenuBurger />
       <h1>Upload data</h1>
       {statusUpload && <Loader />}
       <div className="upload-container">
