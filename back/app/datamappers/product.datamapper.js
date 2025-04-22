@@ -52,6 +52,7 @@ export default class ProductDataMapper extends CoreDataMapper {
       `SELECT product.style as product_style FROM product WHERE id = ?;`,
       [id]
     );
+
     return result[0];
   }
 

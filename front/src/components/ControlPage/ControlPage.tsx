@@ -27,6 +27,8 @@ function ControlPage() {
   const [seasons, setSeasons] = useState([{ season_name: '' }]);
   const [selectedBrand, setSelectedBrand] = useState('');
   const [selectedSeason, setSelectedSeason] = useState('');
+  const [validated, setValidated] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   const getImagesUrl = async (brand: string, season: string) => {
     const result = await axios.get(
@@ -39,6 +41,7 @@ function ControlPage() {
     result.data.map((product: Product) => {
       product.brand_name = brand;
     });
+
     setProducts(result.data);
   };
 
@@ -94,6 +97,7 @@ function ControlPage() {
 
   const getAttributesList = async (index: number) => {
     const productId = products[index].product_id;
+
     const result = await axios.get(
       `${
         process.env.NODE_ENV === 'production'
@@ -129,14 +133,23 @@ function ControlPage() {
           : import.meta.env.VITE_API_URL_DEV
       }/api/products/${productId}`
     );
-    alert(result.data.message);
-    getImagesUrl(selectedBrand, selectedSeason);
-    setCurrentIndex(currentIndex + 1);
+
+    if (!result.data) {
+      throw new Error(
+        `le produit ${productId} n'a pas été mis à jour pour les valeurs`
+      );
+    }
+    setValidated(true);
+
+    setTimeout(() => {
+      setValidated(false);
+      getImagesUrl(selectedBrand, selectedSeason);
+      setCurrentIndex(currentIndex + 1);
+    }, 2000);
   };
 
   const handleFailButton = async () => {
     const productId = products[currentIndex].product_id;
-    console.log(products[currentIndex]);
 
     if (attributeListToEdit.length > 0) {
       try {
@@ -155,12 +168,14 @@ function ControlPage() {
           );
         }
 
-        getImagesUrl(selectedBrand, selectedSeason);
-        setCurrentIndex(currentIndex + 1);
-        // changer le alert en message de succès
-        alert(
-          `le produit ${products[currentIndex].product_style} - ${products[currentIndex].product_name} est envoyé pour correction`
-        );
+        setFailed(true);
+
+        setTimeout(() => {
+          setFailed(false);
+          setattributeListToEdit([]);
+          getImagesUrl(selectedBrand, selectedSeason);
+          setCurrentIndex(currentIndex + 1);
+        }, 2000);
       } catch (error) {
         alert(
           `Erreur lors de la mise à jour du produit ${products[currentIndex].product_name}`
@@ -169,9 +184,8 @@ function ControlPage() {
       }
     } else {
       alert(
-        `le produit ${products[currentIndex].product_style} - ${products[currentIndex].product_name} est envoyé pour correction`
+        `Aucun valeur n'a été sélectionnée pour le produit ${products[currentIndex].product_name}`
       );
-      setCurrentIndex(currentIndex + 1);
     }
   };
 
@@ -231,6 +245,8 @@ function ControlPage() {
         <ActionButtons
           onValidate={handleValidateButton}
           onFail={handleFailButton}
+          validated={validated}
+          failed={failed}
         />
       </div>
     </>

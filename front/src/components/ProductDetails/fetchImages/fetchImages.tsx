@@ -126,6 +126,8 @@ function FetchImages({ style, brand, color }: FetchImagesProps) {
           </button>
         ) : null}
         {availableColors.map((elt, index) => {
+          console.log('elt', elt.color);
+
           if (displayed.includes(index + 1))
             return (
               <button

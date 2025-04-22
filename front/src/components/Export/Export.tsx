@@ -17,9 +17,7 @@ function Export() {
   );
   const [stylesWithDescriptionsComment, setStylesWithDescriptionsComment] =
     useState([]);
-  const [brands, setBrands] = useState([{ brand_name: '' }]);
   const [seasons, setSeasons] = useState([{ season_name: '' }]);
-  const [selectedBrand, setSelectedBrand] = useState('');
   const [selectedSeason, setSelectedSeason] = useState('');
   const [activeFilter, setActiveFilter] = useState(false);
 
@@ -29,7 +27,7 @@ function Export() {
         process.env.NODE_ENV === 'production'
           ? import.meta.env.VITE_API_URL
           : import.meta.env.VITE_API_URL_DEV
-      }/api/export/attributes/${selectedBrand}/${selectedSeason}`
+      }/api/export/attributes/${selectedSeason}`
     );
     setStylesWithAttributesToEdit(result.data);
   };
@@ -40,26 +38,9 @@ function Export() {
         process.env.NODE_ENV === 'production'
           ? import.meta.env.VITE_API_URL
           : import.meta.env.VITE_API_URL_DEV
-      }/api/export/descriptions/${selectedBrand}/${selectedSeason}`
+      }/api/export/descriptions/${selectedSeason}`
     );
     setStylesWithDescriptionsComment(result.data);
-  };
-
-  const getBrands = async () => {
-    const result = await axios.get(
-      `${
-        process.env.NODE_ENV === 'production'
-          ? import.meta.env.VITE_API_URL
-          : import.meta.env.VITE_API_URL_DEV
-      }/api/brands`,
-      {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-    );
-    setBrands(result.data);
   };
 
   const getSeasons = async () => {
@@ -86,10 +67,6 @@ function Export() {
     setActiveFilter(true);
   };
 
-  const handleChangeSelectBrand = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedBrand(e.target.value);
-  };
-
   const handleChangeSelectSeason = (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
@@ -99,7 +76,6 @@ function Export() {
   const [currentDate] = useState(getDate());
 
   useEffect(() => {
-    getBrands();
     getSeasons();
   }, []);
 
@@ -107,14 +83,6 @@ function Export() {
     <div className="parent-container">
       <h1>Export</h1>
       <form onSubmit={handleFilterSubmit} className="filter-form-export">
-        <select name="brand" onChange={handleChangeSelectBrand}>
-          <option defaultValue="">Select a brand</option>
-          {brands.map((brand) => (
-            <option key={brand.brand_name} value={brand.brand_name}>
-              {brand.brand_name}
-            </option>
-          ))}
-        </select>
         <select name="season" onChange={handleChangeSelectSeason}>
           <option defaultValue="">Select a season</option>
           {seasons.map((season) => (

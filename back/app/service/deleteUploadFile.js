@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import cron from 'node-cron';
 
 // Chemin du dossier à surveiller
 const directory = path.join(import.meta.dirname, '..', '../public/uploads');
@@ -52,16 +51,7 @@ function supprimerFichiersAnciens() {
   });
 }
 
-// Planifier la tâche avec node-cron pour l'exécuter tous les jours à 9h
-cron.schedule(
-  '* 9 * * *',
-  () => {
-    console.log(
-      'Exécution de la tâche de suppression des fichiers anciens à 9h'
-    );
-    supprimerFichiersAnciens();
-  },
-  {
-    timezone: 'Europe/Paris', // Option pour définir le fuseau horaire
-  }
-);
+setInterval(() => {
+  console.log('script de suppression lancé');
+  supprimerFichiersAnciens();
+}, 1000 * 60 * 60 * 24); // Exécute la tâche toutes les 24 heures

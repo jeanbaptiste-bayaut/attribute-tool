@@ -5,4 +5,12 @@
   button {
     margin-inline: 1em;
   }
+
+  .validated {
+    background-color: #1de577d0;
+  }
+
+  .failed {
+    background-color: #ec4e4e;
+  }
 }
