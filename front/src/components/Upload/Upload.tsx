@@ -70,8 +70,8 @@ function Upload() {
 
       if (endpoint === 'attributes/values') {
         if (
-          upload.data.existinValues.length > 0 ||
-          upload.data.noExistingAttributes.length > 0
+          upload.data.existinValues?.length > 0 ||
+          upload.data.noExistingAttributes?.length > 0
         ) {
           setList(upload.data);
         }
