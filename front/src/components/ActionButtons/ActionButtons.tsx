@@ -15,10 +15,10 @@ const ActionButtons = ({
 }: ActionButtonsProps) => (
   <div className="buttons">
     <button onClick={onValidate} className={validated ? 'validated' : ''}>
-      Validate
+      Ok
     </button>
     <button onClick={onFail} className={failed ? 'failed' : ''}>
-      Fail
+      Incorrect
     </button>
   </div>
 );

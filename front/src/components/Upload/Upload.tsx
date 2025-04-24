@@ -49,7 +49,6 @@ function Upload() {
     }
 
     const formData = new FormData();
-    console.log('formData', formData);
 
     formData.append(`${endpoint.replace(/\//g, '-')}`, file);
 
@@ -80,14 +79,11 @@ function Upload() {
 
       if (endpoint === 'products/attributes/values') {
         if (upload.data.length > 0) {
-          console.log('upload.data', upload.data);
-
           const notExistingAttributes = upload.data.map(
             (item: { attribute: string; value: string }) => {
               return `${item.attribute} : ${item.value}`;
             }
           );
-          console.log('notExistingAttributes', notExistingAttributes);
 
           setList({
             noExistingAttributes: notExistingAttributes,

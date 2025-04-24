@@ -9,8 +9,6 @@ export default class ProductHasAttributeController extends CoreController {
     try {
       const attributeListToEdit = req.body;
 
-      console.log(attributeListToEdit);
-
       const result = await ProductHasAttributeDataMapper.updateStatus(
         attributeListToEdit
       );

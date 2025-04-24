@@ -3,6 +3,10 @@
   width: 100%;
 }
 
+header p {
+  margin: 0 0 10px 0;
+}
+
 .grid-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;

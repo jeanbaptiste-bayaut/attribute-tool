@@ -16,7 +16,7 @@ const ProductNavigation = ({
   <div className="bottom">
     <div className="previous">
       <button onClick={prevProduct} disabled={currentIndex === 0}>
-        Précédent
+        Previous
       </button>
     </div>
     <div className="next">
@@ -24,7 +24,7 @@ const ProductNavigation = ({
         onClick={nextProduct}
         disabled={currentIndex === totalProducts - 1}
       >
-        Suivant
+        Next
       </button>
     </div>
   </div>
