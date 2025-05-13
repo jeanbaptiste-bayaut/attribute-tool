@@ -17,6 +17,7 @@ interface AxiosError {
 
 type ModalProps = {
   existingValues: { attribute: string; value: string }[];
+  attributeNotFoundList: string[];
   noExistingAttributes: string[];
 };
 
@@ -25,6 +26,7 @@ function Upload() {
   const [statusUpload, setStatusUpload] = useState(false);
   const [list, setList] = useState<ModalProps>({
     existingValues: [],
+    attributeNotFoundList: [],
     noExistingAttributes: [],
   });
 
@@ -78,15 +80,18 @@ function Upload() {
       }
 
       if (endpoint === 'products/attributes/values') {
-        if (upload.data.length > 0) {
-          const notExistingAttributes = upload.data.map(
+        console.log('upload.data', upload.data);
+        if (upload.data.valueNotFoundList.length > 0) {
+          const notExistingAttributes = upload.data.valueNotFoundList.map(
             (item: { attribute: string; value: string }) => {
               return `${item.attribute} : ${item.value}`;
             }
           );
+          const attributeNotFoundList = upload.data.attributeNotFoundList;
 
           setList({
             noExistingAttributes: notExistingAttributes,
+            attributeNotFoundList: attributeNotFoundList,
             existingValues: [],
           });
         }
@@ -122,6 +127,7 @@ function Upload() {
           <Modal
             existingValues={list.existingValues}
             noExistingAttributes={list.noExistingAttributes}
+            attributeNotFoundList={list.attributeNotFoundList}
             setList={setList}
           />
         ) : null}

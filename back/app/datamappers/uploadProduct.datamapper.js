@@ -76,6 +76,7 @@ export default class UploadProductDataMapper extends CoreDataMapper {
       const results = [];
       const promises = [];
       let valueNotFoundList = [];
+      let attributeNotFoundList = [];
 
       await new Promise((resolve, reject) => {
         fs.createReadStream(filePath)
@@ -120,63 +121,77 @@ export default class UploadProductDataMapper extends CoreDataMapper {
       // traiter chaque ligne après avoir trouvé les style_id
       for (const row of results) {
         for (const key in row) {
+          // Vérifier si la clé est un attribut et si les valeurs sont non nulles
           if (
             key !== 'style' &&
             key !== 'style_id' &&
             row[key] !== '' &&
             row[key] !== 'not_found'
           ) {
+            // supprimer les _1, _2, et 1, 2 par une chaîne vide
             let keyFormatted = key;
             if (keyFormatted.match(/(_\d)/)) {
               keyFormatted = key.slice(0, -2);
             }
 
+            if (keyFormatted.match(/(.+\d)/)) {
+              keyFormatted = key.slice(0, -1);
+            }
+
+            // Supprimer les espaces supplémentaires
             if (row[key].match(/(.+ +)/)) {
               row[key] = row[key].replace(/ +/g, '');
             }
 
+            // chercher si l'attribut existe
             const [attributeId] = await this.client.query(
               `SELECT id FROM attribute WHERE name = ?;`,
               [keyFormatted.toLowerCase()]
             );
 
+            // Si l'attribut n'existe pas, l'ajouter à la liste
             if (!attributeId[0]) {
-              throw new Error(`No attribute found for "${keyFormatted}".`);
-            }
-
-            const [valueId] = await this.client.query(
-              `SELECT id FROM value WHERE name = ?;`,
-              [row[key].toLowerCase()]
-            );
-
-            if (!valueId[0] || !valueId[0].id) {
+              // vérifier si l'attribut n'a pas déjà été ajouté
               if (
-                !valueNotFoundList.find(
-                  (item) =>
-                    item.attribute === keyFormatted && item.value === row[key]
-                )
+                !attributeNotFoundList.find((item) => item === keyFormatted)
               ) {
-                valueNotFoundList.push({
-                  attribute: keyFormatted,
-                  value: row[key],
-                });
+                attributeNotFoundList.push(keyFormatted);
               }
             } else {
-              const query = `
+              const [valueId] = await this.client.query(
+                `SELECT id FROM value WHERE name = ?;`,
+                [row[key].toLowerCase()]
+              );
+
+              if (!valueId[0] || !valueId[0].id) {
+                if (
+                  !valueNotFoundList.find(
+                    (item) =>
+                      item.attribute === keyFormatted && item.value === row[key]
+                  )
+                ) {
+                  valueNotFoundList.push({
+                    attribute: keyFormatted,
+                    value: row[key],
+                  });
+                }
+              } else {
+                const query = `
               INSERT IGNORE INTO product_has_attribute (product_id, attribute_id, value_id)
               VALUES (?, ?, ?);`;
 
-              await this.client.query(query, [
-                row.style_id,
-                attributeId[0].id,
-                valueId[0].id,
-              ]);
+                await this.client.query(query, [
+                  row.style_id,
+                  attributeId[0].id,
+                  valueId[0].id,
+                ]);
+              }
             }
           }
         }
       }
       console.log('File uploaded and processed successfully');
-      return valueNotFoundList;
+      return { valueNotFoundList, attributeNotFoundList };
     } catch (error) {
       console.error(error);
       throw new Error(error.message);

@@ -6,27 +6,57 @@ interface ModalProps {
     value: string;
   }[];
   noExistingAttributes: string[];
+  attributeNotFoundList: string[];
   setList: React.Dispatch<
     React.SetStateAction<{
       existingValues: { attribute: string; value: string }[];
       noExistingAttributes: string[];
+      attributeNotFoundList: string[];
     }>
   >;
 }
 
-function Modal({ existingValues, noExistingAttributes, setList }: ModalProps) {
+function Modal({
+  existingValues,
+  noExistingAttributes,
+  attributeNotFoundList,
+  setList,
+}: ModalProps) {
   return (
     <div className="list-container">
-      {noExistingAttributes.length > 0 && (
+      {attributeNotFoundList.length > 0 && (
         <ul>
           <button
             onClick={() =>
-              setList({ existingValues: [], noExistingAttributes: [] })
+              setList({
+                existingValues: [],
+                noExistingAttributes: [],
+                attributeNotFoundList: [],
+              })
             }
           >
             x
           </button>
           <h4>Attributes not existing :</h4>
+          {attributeNotFoundList.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ul>
+      )}
+      {noExistingAttributes.length > 0 && (
+        <ul>
+          <button
+            onClick={() =>
+              setList({
+                existingValues: [],
+                noExistingAttributes: [],
+                attributeNotFoundList: [],
+              })
+            }
+          >
+            x
+          </button>
+          <h4>Values not existing :</h4>
           {noExistingAttributes.map((item, index) => (
             <li key={index}>{item}</li>
           ))}
@@ -36,7 +66,11 @@ function Modal({ existingValues, noExistingAttributes, setList }: ModalProps) {
         <ul>
           <button
             onClick={() =>
-              setList({ existingValues: [], noExistingAttributes: [] })
+              setList({
+                existingValues: [],
+                noExistingAttributes: [],
+                attributeNotFoundList: [],
+              })
             }
           >
             x
