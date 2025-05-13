@@ -1,3 +1,6 @@
+-- Switch sur la base de données attributetool
+USE attributetool;
+
 -- Début de transaction
 START TRANSACTION;
 
@@ -7,13 +10,13 @@ DROP TABLE IF EXISTS product_has_attribute, product, description, attribute, val
 -- Table attribute
 CREATE TABLE attribute (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  name TEXT NOT NULL UNIQUE
+  name VARCHAR(255) NOT NULL UNIQUE
 );
 
 -- Table value
 CREATE TABLE value (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  name TEXT NOT NULL,
+  name VARCHAR(255) NOT NULL,
   attribute_id INT NOT NULL,
   CONSTRAINT fk_value_attribute FOREIGN KEY (attribute_id) REFERENCES attribute(id)
 );
@@ -21,17 +24,18 @@ CREATE TABLE value (
 -- Table description
 CREATE TABLE description (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  description TEXT NOT NULL,
+  description LONGTEXT NOT NULL,
   style VARCHAR(10) NOT NULL UNIQUE,
-  comment TEXT
+  comment LONGTEXT
 );
 
 -- Table product
 CREATE TABLE product (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  style TEXT NOT NULL UNIQUE,
-  name TEXT NOT NULL,
-  image_url TEXT,
+  style VARCHAR(255) NOT NULL UNIQUE,
+  color VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  image_url VARCHAR(255),
   description_id INT UNIQUE,
   status BOOLEAN NOT NULL DEFAULT FALSE,
   season INT NOT NULL DEFAULT 1,

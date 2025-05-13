@@ -6,10 +6,9 @@ export default class ExportCOntroller extends CoreController {
   static mainDataMapper = ExportDataMapper;
 
   static async getStylesWithAttributeToEdit(req, res) {
-    const { brand, season } = req.params;
+    const { season } = req.params;
     try {
       const result = await ExportDataMapper.findStyleWithAttributeToEdit(
-        brand,
         season
       );
 
@@ -20,10 +19,9 @@ export default class ExportCOntroller extends CoreController {
   }
 
   static async getStylesWithDescriptionComment(req, res) {
-    const { brand, season } = req.params;
+    const { season } = req.params;
     try {
       const result = await ExportDataMapper.findStyleWithDescriptionComment(
-        brand,
         season
       );
 

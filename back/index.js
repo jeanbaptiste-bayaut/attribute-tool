@@ -17,7 +17,7 @@ import './app/service/deleteUploadFile.js';
 (async () => {
   try {
     await getConnection();
-    console.log('🔍 PG databse connected');
+    console.log('🔍 MYSQL databse connected');
     httpServer.listen(PORT, () => {
       console.log(`🚀 Server launched at http://localhost:${PORT} 🚀`);
     });

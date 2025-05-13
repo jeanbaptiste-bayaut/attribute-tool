@@ -1,4 +1,7 @@
 .list-container {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
     width: 100%;
     position: absolute;
     background-color: rgba(36, 28, 28, 0.735);
@@ -10,7 +13,6 @@
     ul {
         position:static;        
         background-color: white;
-        margin: 0 auto;
         border-radius: 8px;
         width: 400px;
         height: 500px;

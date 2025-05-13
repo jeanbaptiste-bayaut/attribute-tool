@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { CSVLink } from 'react-csv';
 import Loader from '../Loader/Loader';
 import Modal from './Modal/Modal';
+import MenuBurger from '../MenuBurger/MenuBurger';
 
 interface AxiosError {
   response?: {
@@ -15,14 +16,17 @@ interface AxiosError {
 }
 
 type ModalProps = {
-  attribute: string;
-  value: string;
-}[];
+  existingValues: { attribute: string; value: string }[];
+  noExistingAttributes: string[];
+};
 
 function Upload() {
   const [file, setFile] = useState<File | null>(null);
   const [statusUpload, setStatusUpload] = useState(false);
-  const [list, setList] = useState<ModalProps>([]);
+  const [list, setList] = useState<ModalProps>({
+    existingValues: [],
+    noExistingAttributes: [],
+  });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -45,7 +49,6 @@ function Upload() {
     }
 
     const formData = new FormData();
-    console.log('formData', formData);
 
     formData.append(`${endpoint.replace(/\//g, '-')}`, file);
 
@@ -65,21 +68,30 @@ function Upload() {
         }
       );
 
-      if (endpoint === 'products/attributes/values' && upload.data.length > 0) {
-        setList(upload.data);
+      if (endpoint === 'attributes/values') {
+        if (
+          upload.data.existinValues?.length > 0 ||
+          upload.data.noExistingAttributes?.length > 0
+        ) {
+          setList(upload.data);
+        }
       }
 
-      if (upload.data.existingValues) {
-        alert(
-          `${endpoint} file uploaded successfully with existing values: \n
-          ${upload.data.existingValues
-            .map(
-              (value: { attribute: string; value: string }) =>
-                `${value.attribute}: ${value.value}`
-            )
-            .join('\n')}`
-        );
+      if (endpoint === 'products/attributes/values') {
+        if (upload.data.length > 0) {
+          const notExistingAttributes = upload.data.map(
+            (item: { attribute: string; value: string }) => {
+              return `${item.attribute} : ${item.value}`;
+            }
+          );
+
+          setList({
+            noExistingAttributes: notExistingAttributes,
+            existingValues: [],
+          });
+        }
       }
+
       setStatusUpload(false);
       alert(`${endpoint} file uploaded successfully`);
       setFile(null);
@@ -91,6 +103,7 @@ function Upload() {
       )?.reset();
     } catch (error) {
       const axiosError = error as AxiosError;
+      console.log('axiosError', axiosError);
       const errorMessage =
         axiosError.response?.data?.message || axiosError.message;
       alert(`Error uploading the ${endpoint} file: \n ${errorMessage}`);
@@ -100,11 +113,17 @@ function Upload() {
 
   return (
     <>
+      <MenuBurger />
       <h1>Upload data</h1>
       {statusUpload && <Loader />}
       <div className="upload-container">
-        {list.length > 0 && !statusUpload ? (
-          <Modal list={list} setList={setList} />
+        {list?.existingValues.length > 0 ||
+        (list?.noExistingAttributes.length > 0 && !statusUpload) ? (
+          <Modal
+            existingValues={list.existingValues}
+            noExistingAttributes={list.noExistingAttributes}
+            setList={setList}
+          />
         ) : null}
         <form
           id="products"

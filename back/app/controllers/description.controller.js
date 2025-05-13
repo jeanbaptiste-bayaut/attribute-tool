@@ -23,6 +23,18 @@ export default class DescriptionController extends CoreController {
     }
   }
 
+  static async getCommentByStyle(req, res) {
+    const { style } = req.params;
+
+    try {
+      const result = await DescriptionDataMapper.getCommentByStyle(style);
+
+      res.status(200).json(result);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+
   static async addComment(req, res) {
     const { comment, style } = req.body;
 

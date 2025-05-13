@@ -1,8 +1,10 @@
 import './ProductDetails.scss';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import axios from 'axios';
 import FetchImages from './fetchImages/fetchImages';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 
 interface ProductDetailsProps {
   product: {
@@ -33,18 +35,34 @@ Modal.setAppElement('#root');
 const ProductDetails = ({ product }: ProductDetailsProps) => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState('');
-
-  if (!product) {
-    // Si le produit n'est pas encore défini, on peut afficher un chargement ou rien
-    return <div>Loading...</div>;
-  }
+  const [commentSent, setCommentSent] = useState(false);
+  const [descriptionFormat, setDescriptionFormat] =
+    useState<(string | JSX.Element)[]>();
 
   function openModal() {
     setIsOpen(true);
+    getComment();
   }
 
   function closeModal() {
     setIsOpen(false);
+  }
+
+  async function getComment() {
+    setFormData('');
+    try {
+      const result = await axios.get(
+        `${
+          process.env.NODE_ENV === 'production'
+            ? import.meta.env.VITE_API_URL
+            : import.meta.env.VITE_API_URL_DEV
+        }/api/descriptions/comment/${product?.product_style}`
+      );
+
+      if (result.data) setFormData(result.data.comment);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async function handleSubmit(event: React.FormEvent) {
@@ -68,26 +86,47 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
       );
 
       if (result.status === 200) {
-        alert('Comment sent');
+        setCommentSent(!commentSent);
         setFormData('');
         closeModal();
       }
+
+      setTimeout(() => {
+        setCommentSent(false);
+      }, 2000);
     } catch (error) {
       console.error(error);
     }
   }
 
-  const description = `${product.product_description.replace(/\^/g, '\n\n')}`;
-  const regex = /([A-Z][a-z ]+[a-zA-Z]+:)/;
-  const descriptionFormat = description.split(regex).map((elt, index) =>
-    regex.test(elt) ? (
-      <span key={index} className="highlight">
-        {elt}{' '}
-      </span>
-    ) : (
-      elt
-    )
-  );
+  function formatDescription() {
+    const description = `${product?.product_description.replace(
+      /\^/g,
+      '\n\n'
+    )}`;
+    const regex = /([A-Z][a-z ]+[a-zA-Z]+:)/;
+    const descriptionFormat = description.split(regex).map((elt, index) =>
+      regex.test(elt) ? (
+        <span key={index} className="highlight">
+          {elt}{' '}
+        </span>
+      ) : (
+        elt
+      )
+    );
+
+    setDescriptionFormat(descriptionFormat);
+  }
+
+  useEffect(() => {
+    formatDescription();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product]);
+
+  if (!product) {
+    // Si le produit n'est pas encore défini, on peut afficher un chargement ou rien
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="image-description">
@@ -106,7 +145,16 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
         <div className="text">
           <pre>{descriptionFormat}</pre>
         </div>
-        <button onClick={openModal}>Add comment</button>
+        <div className="comment-button">
+          <button onClick={openModal}>Add comment</button>
+          {commentSent && (
+            <FontAwesomeIcon
+              icon={faCircleCheck}
+              size="2xl"
+              style={{ color: '#63E6BE' }}
+            />
+          )}
+        </div>
         <Modal
           isOpen={modalIsOpen}
           onRequestClose={closeModal}
@@ -118,7 +166,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
           <button onClick={closeModal}>x</button>
           <form onSubmit={handleSubmit} className="form-description">
             <textarea
-              placeholder="Your comment here ..."
+              placeholder={'Your comment here ...'}
               className="textarea"
               name="comment"
               value={formData}

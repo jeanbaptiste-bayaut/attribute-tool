@@ -1,27 +1,54 @@
 import './Modal.scss';
 
 interface ModalProps {
-  list: {
+  existingValues: {
     attribute: string;
     value: string;
   }[];
+  noExistingAttributes: string[];
   setList: React.Dispatch<
-    React.SetStateAction<{ attribute: string; value: string }[]>
+    React.SetStateAction<{
+      existingValues: { attribute: string; value: string }[];
+      noExistingAttributes: string[];
+    }>
   >;
 }
 
-function Modal({ list, setList }: ModalProps) {
+function Modal({ existingValues, noExistingAttributes, setList }: ModalProps) {
   return (
     <div className="list-container">
-      <ul>
-        <button onClick={() => setList([])}>x</button>
-        <h4>Values not found :</h4>
-        {list.map((item, index) => (
-          <li key={index}>
-            {item.attribute} : {item.value}
-          </li>
-        ))}
-      </ul>
+      {noExistingAttributes.length > 0 && (
+        <ul>
+          <button
+            onClick={() =>
+              setList({ existingValues: [], noExistingAttributes: [] })
+            }
+          >
+            x
+          </button>
+          <h4>Attributes not existing :</h4>
+          {noExistingAttributes.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ul>
+      )}
+      {existingValues.length > 0 && (
+        <ul>
+          <button
+            onClick={() =>
+              setList({ existingValues: [], noExistingAttributes: [] })
+            }
+          >
+            x
+          </button>
+          <h4>Existing Values :</h4>
+          {existingValues.map((item, index) => (
+            <li key={index}>
+              {item.attribute} : {item.value}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

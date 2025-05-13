@@ -32,11 +32,14 @@ export default class ProductController extends CoreController {
   static async validateProduct(req, res) {
     try {
       const { id } = req.params;
+
       const result = await ProductDataMapper.switchProductStatus(id);
 
       res
         .status(200)
-        .json({ message: `product ${result.style} has been validated` });
+        .json({
+          message: `product ${result.product_style} has been validated`,
+        });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }

@@ -3,6 +3,11 @@ import DescriptionController from '../controllers/description.controller.js';
 
 const router = Router();
 
+router.get(
+  '/api/descriptions/comment/:style',
+  DescriptionController.getCommentByStyle.bind(DescriptionController)
+);
+
 router.post(
   '/api/descriptions/comment',
   DescriptionController.addComment.bind(DescriptionController)
