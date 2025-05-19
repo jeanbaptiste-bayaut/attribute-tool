@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'path';
+import deleteUploadFiles from './app/utils/deleteUploadFiles.js';
 
 const __dirname = path.resolve();
 dotenv.config({ path: path.join(__dirname, '../.env') });
@@ -13,6 +14,11 @@ const httpServer = createServer(app);
 const PORT = process.env.PORT || 3000;
 
 import './app/service/deleteUploadFile.js';
+
+setInterval(() => {
+  console.log('Deleting old files...');
+  deleteUploadFiles();
+}, 24 * 60 * 60 * 1000); // every 24 hours
 
 (async () => {
   try {
