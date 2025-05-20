@@ -5,7 +5,7 @@ USE attributetool;
 START TRANSACTION;
 
 -- Supprimer les tables si elles existent déjà
-DROP TABLE IF EXISTS product_has_attribute, product, description, attribute, value;
+DROP TABLE IF EXISTS product_has_attribute, product, english, french, german, spanish, italian, portuguese, dutch, attribute, value;
 
 -- Table attribute
 CREATE TABLE attribute (
@@ -21,14 +21,6 @@ CREATE TABLE value (
   CONSTRAINT fk_value_attribute FOREIGN KEY (attribute_id) REFERENCES attribute(id)
 );
 
--- Table description
-CREATE TABLE description (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  description LONGTEXT NOT NULL,
-  style VARCHAR(10) NOT NULL UNIQUE,
-  comment LONGTEXT
-);
-
 -- Table product
 CREATE TABLE product (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -36,11 +28,101 @@ CREATE TABLE product (
   color VARCHAR(255) NOT NULL,
   name VARCHAR(255) NOT NULL,
   image_url VARCHAR(255),
-  description_id INT UNIQUE,
   status BOOLEAN NOT NULL DEFAULT FALSE,
-  season INT NOT NULL DEFAULT 1,
-  CONSTRAINT fk_product_description FOREIGN KEY (description_id) REFERENCES description(id)
+  season INT NOT NULL DEFAULT 1
 );
+
+-- Table English
+CREATE TABLE english (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  locale VARCHAR(10) NOT NULL DEFAULT 'master',
+  label VARCHAR(255) NOT NULL,
+  product_type VARCHAR(255) NOT NULL,
+  product_description LONGTEXT,
+  product_characteristic LONGTEXT,
+  product_composition LONGTEXT,
+  product_id INT NOT NULL,
+  CONSTRAINT fk_english_product FOREIGN KEY (product_id) REFERENCES product(id)
+);
+
+-- Table French
+CREATE TABLE french (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  locale VARCHAR(10) NOT NULL DEFAULT 'fr',
+  label VARCHAR(255) NOT NULL,
+  product_type VARCHAR(255) NOT NULL,
+  product_description LONGTEXT,
+  product_characteristic LONGTEXT,
+  product_composition LONGTEXT,
+  product_id INT NOT NULL,
+  CONSTRAINT fk_french_product FOREIGN KEY (product_id) REFERENCES product(id)
+);
+
+-- Table German
+CREATE TABLE german (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  locale VARCHAR(10) NOT NULL DEFAULT 'de',
+  label VARCHAR(255) NOT NULL,
+  product_type VARCHAR(255) NOT NULL,
+  product_description LONGTEXT,
+  product_characteristic LONGTEXT,
+  product_composition LONGTEXT,
+  product_id INT NOT NULL,
+  CONSTRAINT fk_german_product FOREIGN KEY (product_id) REFERENCES product(id)
+);
+
+-- Table Spanish
+CREATE TABLE spanish (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  locale VARCHAR(10) NOT NULL DEFAULT 'es',
+  label VARCHAR(255) NOT NULL,
+  product_type VARCHAR(255) NOT NULL,
+  product_description LONGTEXT,
+  product_characteristic LONGTEXT,
+  product_composition LONGTEXT,
+  product_id INT NOT NULL,
+  CONSTRAINT fk_spanish_product FOREIGN KEY (product_id) REFERENCES product(id)
+);
+
+-- Table Italian
+CREATE TABLE italian (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  locale VARCHAR(10) NOT NULL DEFAULT 'it',
+  label VARCHAR(255) NOT NULL,
+  product_type VARCHAR(255) NOT NULL,
+  product_description LONGTEXT,
+  product_characteristic LONGTEXT,
+  product_composition LONGTEXT,
+  product_id INT NOT NULL,
+  CONSTRAINT fk_italian_product FOREIGN KEY (product_id) REFERENCES product(id)
+);
+
+-- Table Portuguese
+CREATE TABLE portuguese (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  locale VARCHAR(10) NOT NULL DEFAULT 'pt',
+  label VARCHAR(255) NOT NULL,
+  product_type VARCHAR(255) NOT NULL,
+  product_description LONGTEXT,
+  product_characteristic LONGTEXT,
+  product_composition LONGTEXT,
+  product_id INT NOT NULL,
+  CONSTRAINT fk_portuguese_product FOREIGN KEY (product_id) REFERENCES product(id)
+);
+
+-- Table Dutch
+CREATE TABLE dutch (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  locale VARCHAR(10) NOT NULL DEFAULT 'nl',
+  label VARCHAR(255) NOT NULL,
+  product_type VARCHAR(255) NOT NULL,
+  product_description LONGTEXT,
+  product_characteristic LONGTEXT,
+  product_composition LONGTEXT,
+  product_id INT NOT NULL,
+  CONSTRAINT fk_dutch_product FOREIGN KEY (product_id) REFERENCES product(id)
+);
+
 
 -- Table product_has_attribute
 CREATE TABLE product_has_attribute (

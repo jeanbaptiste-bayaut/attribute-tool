@@ -13,8 +13,6 @@ import { getConnection } from './app/client/pg.config.client.js';
 const httpServer = createServer(app);
 const PORT = process.env.PORT || 3000;
 
-import './app/service/deleteUploadFile.js';
-
 setInterval(() => {
   console.log('Deleting old files...');
   deleteUploadFiles();

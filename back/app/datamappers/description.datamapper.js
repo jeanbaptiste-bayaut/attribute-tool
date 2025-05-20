@@ -9,15 +9,24 @@ function cleanKeys(obj) {
     const cleanedKey = key.trim().replace(/['"]+/g, ''); // Supprime les apostrophes/guillemets et espaces
     cleanedObj[cleanedKey] = obj[key];
   }
+
   return cleanedObj;
 }
 
 export default class DescriptionDataMapper extends CoreDataMapper {
   static tableName = 'description';
+  static languageMapping = [
+    { code: 'master', locale: 'english' },
+    { code: 'fr', locale: 'french' },
+    { code: 'de', locale: 'german' },
+    { code: 'it', locale: 'italian' },
+    { code: 'es', locale: 'spanish' },
+    { code: 'nl', locale: 'dutch' },
+    { code: 'pt', locale: 'portuguese' },
+  ];
 
   static async uploadDescriptions(filePath) {
     const results = [];
-    const styleWithDescriptionId = [];
 
     try {
       await this.client.query('BEGIN'); // Commencer une transaction
@@ -27,53 +36,57 @@ export default class DescriptionDataMapper extends CoreDataMapper {
         .pipe(csvParser({ separator: ';' }));
 
       for await (const row of readStream) {
-        const cleanedRow = cleanKeys(row);
-
+        // Vérifier si les clés sont présentes dans l'en-tête
         if (
-          !Object.keys(cleanedRow)[0]
-            .split(',')
-            .includes('style', 'description')
+          !Object.keys(row).includes(
+            'ModesCode',
+            'LabelWeb',
+            'ActiveLanguage',
+            'DescriptionLong',
+            'Characteristics',
+            'composition',
+            'type'
+          )
         ) {
-          throw new Error('header must include "style" and "description"');
+          throw new Error(
+            'header must include "ModesCode", "LabelWeb", "ActiveLanguage", "DescriptionLong", "Characteristics", "composition", "type"'
+          );
         }
+
+        const cleanedRow = cleanKeys(row);
         results.push(cleanedRow);
       }
 
-      const insertQuery = `
-        INSERT INTO description (description, style)
-        VALUES (?, ?);
-      `;
-
       for (const row of results) {
         const [isStyleExists] = await this.client.query(
-          `SELECT * FROM product WHERE style=?`,
-          [row.style]
+          `SELECT id FROM product WHERE style=?`,
+          [row.ModesCode]
         );
 
         if (!isStyleExists[0]) {
-          throw new Error(`style ${row.style} does not exist`);
+          throw new Error(`style ${row.ModesCode} does not exist`);
         }
-        await this.client.query(insertQuery, [row.description, row.style]);
-      }
 
-      const [resultSelectDescStyleId] = await this.client.query(`
-        SELECT product.style, description.id 
-        FROM product
-        JOIN description ON product.style = description.style;
-      `);
+        const { locale } = this.languageMapping.find(
+          (lang) => lang.code === row.ActiveLanguage
+        );
 
-      styleWithDescriptionId.push(...resultSelectDescStyleId);
+        if (!locale) {
+          throw new Error(`Language ${row.ActiveLanguage} not supported`);
+        }
 
-      const updateDescIdInProductQuery = `
-        UPDATE product
-        SET description_id = ?
-        WHERE style = ?;
+        const insertQuery = `
+        INSERT INTO ${locale} (label, product_type, product_description, product_characteristic, product_composition, product_id)
+        VALUES (?, ?, ?, ?, ?, ?);
       `;
 
-      for (const row of styleWithDescriptionId) {
-        await this.client.query(updateDescIdInProductQuery, [
-          row.id,
-          row.style,
+        await this.client.query(insertQuery, [
+          row.LabelWeb,
+          row.type,
+          row.DescriptionLong,
+          row.Characteristics,
+          row.composition,
+          isStyleExists[0].id,
         ]);
       }
 
