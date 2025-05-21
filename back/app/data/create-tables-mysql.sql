@@ -136,6 +136,21 @@ CREATE TABLE product_has_attribute (
   CONSTRAINT unique_attribute_value UNIQUE (product_id, attribute_id, value_id)
 );
 
+-- Table commentaire
+CREATE TABLE comment (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  product_id INT NOT NULL,
+  comment LONGTEXT NOT NULL,
+  english boolean NOT NULL DEFAULT FALSE,
+  french boolean NOT NULL DEFAULT FALSE,
+  german boolean NOT NULL DEFAULT FALSE,
+  spanish boolean NOT NULL DEFAULT FALSE,
+  italian boolean NOT NULL DEFAULT FALSE,
+  portuguese boolean NOT NULL DEFAULT FALSE,
+  dutch boolean NOT NULL DEFAULT FALSE,
+  CONSTRAINT fk_comment_product FOREIGN KEY (product_id) REFERENCES product(id)
+)
+
 -- Clé unique composite dans la table value
 ALTER TABLE value ADD CONSTRAINT unique_name_attribute UNIQUE (name, attribute_id);
 

@@ -69,14 +69,13 @@
   .text {
     max-height: 400px;
     overflow-y: auto;
-    margin-bottom: 2em;
+    margin-bottom: 10px;
     padding: 0 1em;
     text-align: left;
   }
 
   pre {
     text-align: left;
-    padding: 10px;
     word-break: break-word;
     white-space: pre-wrap;
     font-size: 16px;
@@ -172,8 +171,17 @@
   flex-direction: column;
   gap: 1em;
 
+  .locales-list {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+
+    label {
+      color: #3B3B3B;
+    }
+  }
+
   .textarea {
-    margin-top: 2em;
     height: 200px;
     width: 450px;
     vertical-align: top;

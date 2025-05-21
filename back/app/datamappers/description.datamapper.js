@@ -122,19 +122,39 @@ export default class DescriptionDataMapper extends CoreDataMapper {
   static async getCommentByStyle(style) {
     const [result] = await this.client.query(
       `SELECT comment 
-      FROM ${this.tableName}
-      WHERE style=?;`,
+      FROM comment
+      WHERE product_id = (SELECT id FROM product WHERE style = ?);`,
       [style]
     );
 
     return result[0];
   }
 
-  static async addComment(comment, style) {
+  static async addComment({
+    style,
+    comment,
+    english,
+    french,
+    german,
+    spanish,
+    italian,
+    portuguese,
+    dutch,
+  }) {
     const [result] = await this.client.query(
-      `UPDATE ${this.tableName} SET comment = ?
-      WHERE style=?;`,
-      [comment, style]
+      `INSERT INTO comment (product_id, comment, english, french, german, spanish, italian, portuguese, dutch)
+      VALUES ((SELECT id FROM product WHERE style = ?), ?, ?, ?, ?, ?, ?, ?, ?);`,
+      [
+        style,
+        comment,
+        english,
+        french,
+        german,
+        spanish,
+        italian,
+        portuguese,
+        dutch,
+      ]
     );
 
     return result[0];

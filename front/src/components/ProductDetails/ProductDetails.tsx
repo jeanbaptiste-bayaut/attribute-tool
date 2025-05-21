@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import axios from 'axios';
 import FetchImages from './fetchImages/fetchImages';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 
 interface ProductDetailsProps {
   product: {
@@ -27,37 +27,66 @@ interface DescriptionProps {
   product_id: number;
 }
 
-// const customStyles = {
-//   content: {
-//     top: '50%',
-//     left: '50%',
-//     right: 'auto',
-//     bottom: 'auto',
-//     marginRight: '-50%',
-//     transform: 'translate(-50%, -50%)',
-//     width: '500px',
-//     height: '350px',
-//   },
-// };
+interface CommentProps {
+  style: string;
+  comment: string;
+  english: boolean;
+  german: boolean;
+  french: boolean;
+  spanish: boolean;
+  italian: boolean;
+  dutch: boolean;
+  portuguese: boolean;
+}
+
+type LocaleKey =
+  | 'english'
+  | 'german'
+  | 'french'
+  | 'spanish'
+  | 'italian'
+  | 'dutch'
+  | 'portuguese';
+
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    width: '500px',
+    height: '350px',
+  },
+};
 
 Modal.setAppElement('#root');
 
 const ProductDetails = ({ product }: ProductDetailsProps) => {
-  // const [modalIsOpen, setIsOpen] = useState(false);
-  // const [formData, setFormData] = useState('');
-  //const [commentSent, setCommentSent] = useState(false);
-  //const [descriptionFormat, setDescriptionFormat] =
-  //useState<(string | JSX.Element)[]>();
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [formData, setFormData] = useState<CommentProps>({
+    style: '',
+    comment: '',
+    english: false,
+    german: false,
+    french: false,
+    spanish: false,
+    italian: false,
+    dutch: false,
+    portuguese: false,
+  });
+  const [commentSent, setCommentSent] = useState(false);
   const [description, setDescription] = useState<DescriptionProps>();
 
-  // function openModal() {
-  //   setIsOpen(true);
-  //   //getComment();
-  // }
+  function openModal() {
+    setIsOpen(true);
+    getComment();
+  }
 
-  // function closeModal() {
-  //   setIsOpen(false);
-  // }
+  function closeModal() {
+    setIsOpen(false);
+  }
 
   async function getDescription(locale: string, style: string | undefined) {
     try {
@@ -85,71 +114,120 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
     }
   }
 
-  // async function getComment() {
-  //   setFormData('');
-  //   try {
-  //     const result = await axios.get(
-  //       `${
-  //         process.env.NODE_ENV === 'production'
-  //           ? import.meta.env.VITE_API_URL
-  //           : import.meta.env.VITE_API_URL_DEV
-  //       }/api/descriptions/comment/${product?.product_style}`
-  //     );
+  async function getComment() {
+    setFormData({
+      style: '',
+      comment: '',
+      english: false,
+      german: false,
+      french: false,
+      spanish: false,
+      italian: false,
+      dutch: false,
+      portuguese: false,
+    });
+    try {
+      const result = await axios.get(
+        `${
+          process.env.NODE_ENV === 'production'
+            ? import.meta.env.VITE_API_URL
+            : import.meta.env.VITE_API_URL_DEV
+        }/api/descriptions/comment/${product?.product_style}`
+      );
 
-  //     if (result.data) setFormData(result.data.comment);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }
+      if (result.data) setFormData(result.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
-  // async function handleSubmit(event: React.FormEvent) {
-  //   event.preventDefault();
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
 
-  //   const form = event.target as HTMLFormElement;
-  //   const formData = new FormData(form);
-  //   const formJson = Object.fromEntries(formData.entries());
-  //   if (product?.product_style) {
-  //     formJson['style'] = product.product_style;
-  //   }
+    const form = event.target as HTMLFormElement;
+    const formData = new FormData(form);
+    const formJson = Object.fromEntries(formData);
 
-  //   try {
-  //     const result = await axios.post(
-  //       `${
-  //         process.env.NODE_ENV === 'production'
-  //           ? import.meta.env.VITE_API_URL
-  //           : import.meta.env.VITE_API_URL_DEV
-  //       }/api/descriptions/comment`,
-  //       formJson
-  //     );
+    const locales: LocaleKey[] = [
+      'english',
+      'german',
+      'french',
+      'spanish',
+      'italian',
+      'dutch',
+      'portuguese',
+    ];
 
-  //     if (result.status === 200) {
-  //       setCommentSent(!commentSent);
-  //       setFormData('');
-  //       closeModal();
-  //     }
+    const parsedForm: CommentProps = {
+      style: product?.product_style || '',
+      comment: formJson['comment']?.toString() || '',
+      english: false,
+      german: false,
+      french: false,
+      spanish: false,
+      italian: false,
+      dutch: false,
+      portuguese: false,
+    };
 
-  //     setTimeout(() => {
-  //       setCommentSent(false);
-  //     }, 2000);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }
+    locales.forEach((locale) => {
+      parsedForm[locale] = formJson[locale] === 'on';
+    });
+
+    try {
+      const result = await axios.post(
+        `${
+          process.env.NODE_ENV === 'production'
+            ? import.meta.env.VITE_API_URL
+            : import.meta.env.VITE_API_URL_DEV
+        }/api/descriptions/comment`,
+        parsedForm
+      );
+
+      if (result.status === 200) {
+        setCommentSent(!commentSent);
+        setFormData({
+          style: '',
+          comment: '',
+          english: false,
+          german: false,
+          french: false,
+          spanish: false,
+          italian: false,
+          dutch: false,
+          portuguese: false,
+        });
+        closeModal();
+      }
+
+      setTimeout(() => {
+        setCommentSent(false);
+      }, 2000);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   function formatDescription(text: string) {
     text = `${text}`;
-    const characteristics = text.replace(/__([^:]+):__/g, '$1:');
 
-    characteristics?.replace(/([^:\n]) ([A-Z][a-z]+:)/g, '$1\n$2');
+    const html = text
+      .replace(/__([^:]+):__/g, '<strong><u>$1:</u></strong>')
+      .replace(/([^:\n]) ([A-Z][a-z]+:)/g, '$1<br />$2');
 
-    console.log(characteristics);
+    html.replace(/__([^:]+):__/g, '<strong><u>$1:</u></strong>');
 
-    return characteristics;
+    const htmlOutput = '<pre>' + html + '</pre>';
+
+    return htmlOutput;
   }
 
   useEffect(() => {
-    getDescription('english', product?.product_style);
-  }, [product]);
+    if (product) {
+      getDescription('english', product?.product_style);
+    }
+    // eslint-disable-next-line
+  }, [product?.product_style]);
 
   if (!product) {
     // Si le produit n'est pas encore défini, on peut afficher un chargement ou rien
@@ -238,58 +316,157 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
             </li>
           </ul>
         </div>
-        <h3 className={description?.locale}>
-          {description?.label} - {product.product_style} -{' '}
-          {product.product_color}
+        <h3>
+          {description?.label}
+          <br />
+          {product.product_style.toLocaleUpperCase()} -{' '}
+          {product.product_color.toLocaleUpperCase()}
         </h3>
       </div>
       {description && (
         <div className="description">
-          <div className="text">Type : {description?.product_type}</div>
           <div className="text">
-            Decription :{' '}
+            <strong>Type :</strong> {description?.product_type}
+          </div>
+          <div className="text">
+            <strong>Decription :</strong>{' '}
             {description?.product_description
               ? description?.product_description
               : 'No description'}
           </div>
-          <pre className="text">
-            Charachteristics : <br />
-            <br />
-            {description?.product_characteristic}
-          </pre>
           <div className="text">
-            Composition : {description?.product_composition}
+            <strong>Charachteristics :</strong> <br />
+            {description?.product_characteristic && (
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: description.product_characteristic,
+                }}
+              />
+            )}
+          </div>
+          <div className="text">
+            <strong>Composition : </strong>
+            <br />
+            {description?.product_composition}
           </div>
           <div className="comment-button">
-            {/* <button onClick={openModal}>Add comment</button> */}
-            {/* {commentSent && (
-            <FontAwesomeIcon
-              icon={faCircleCheck}
-              size="2xl"
-              style={{ color: '#63E6BE' }}
-            />
-          )} */}
+            <button onClick={openModal}>Add comment</button>
+            {commentSent && (
+              <FontAwesomeIcon
+                icon={faCircleCheck}
+                size="2xl"
+                style={{ color: '#63E6BE' }}
+              />
+            )}
           </div>
-          {/* <Modal
-          isOpen={modalIsOpen}
-          onRequestClose={closeModal}
-          contentLabel="Example Modal"
-          style={customStyles}
-          className="Modal"
-          overlayClassName="Overlay"
-        >
-          <button onClick={closeModal}>x</button>
-          <form onSubmit={handleSubmit} className="form-description">
-            <textarea
-              placeholder={'Your comment here ...'}
-              className="textarea"
-              name="comment"
-              value={formData}
-              onChange={(e) => setFormData(e.target.value)}
-            ></textarea>
-            <button type="submit">Send</button>
-          </form>
-        </Modal> */}
+          <Modal
+            isOpen={modalIsOpen}
+            onRequestClose={closeModal}
+            contentLabel="Example Modal"
+            style={customStyles}
+            className="Modal"
+            overlayClassName="Overlay"
+          >
+            <button onClick={closeModal}>x</button>
+            <form onSubmit={handleSubmit} className="form-description">
+              <section className="locales-list">
+                <label>
+                  EN
+                  <input
+                    type="checkbox"
+                    name="english"
+                    id="en"
+                    checked={formData?.english}
+                    onChange={(e) =>
+                      setFormData({ ...formData, english: e.target.checked })
+                    }
+                  />
+                </label>
+                <label>
+                  DE
+                  <input
+                    type="checkbox"
+                    name="german"
+                    id="de"
+                    checked={formData?.german}
+                    onChange={(e) =>
+                      setFormData({ ...formData, german: e.target.checked })
+                    }
+                  />
+                </label>
+                <label>
+                  FR
+                  <input
+                    type="checkbox"
+                    name="french"
+                    id="fr"
+                    checked={formData?.french}
+                    onChange={(e) =>
+                      setFormData({ ...formData, french: e.target.checked })
+                    }
+                  />
+                </label>
+                <label>
+                  ES
+                  <input
+                    type="checkbox"
+                    name="spanish"
+                    id="es"
+                    checked={formData?.spanish}
+                    onChange={(e) =>
+                      setFormData({ ...formData, spanish: e.target.checked })
+                    }
+                  />
+                </label>
+                <label>
+                  IT
+                  <input
+                    type="checkbox"
+                    name="italian"
+                    id="it"
+                    checked={formData?.italian}
+                    onChange={(e) =>
+                      setFormData({ ...formData, italian: e.target.checked })
+                    }
+                  />
+                </label>
+                <label>
+                  NL
+                  <input
+                    type="checkbox"
+                    name="dutch"
+                    id="nl"
+                    checked={formData?.dutch}
+                    onChange={(e) =>
+                      setFormData({ ...formData, dutch: e.target.checked })
+                    }
+                  />
+                </label>
+                <label>
+                  PT
+                  <input
+                    type="checkbox"
+                    name="portuguese"
+                    id="pt"
+                    checked={formData?.portuguese}
+                    onChange={(e) =>
+                      setFormData({ ...formData, portuguese: e.target.checked })
+                    }
+                  />
+                </label>
+              </section>
+              <textarea
+                placeholder={'Your comment here ...'}
+                className="textarea"
+                name="comment"
+                value={formData?.comment}
+                onChange={(e) =>
+                  setFormData({ ...formData, comment: e.target.value })
+                }
+              ></textarea>
+              <button type="submit">Send</button>
+            </form>
+          </Modal>
         </div>
       )}
     </div>

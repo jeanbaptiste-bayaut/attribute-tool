@@ -51,10 +51,10 @@ export default class DescriptionController extends CoreController {
   }
 
   static async addComment(req, res) {
-    const { comment, style } = req.body;
+    const data = req.body;
 
     try {
-      const result = await DescriptionDataMapper.addComment(comment, style);
+      const result = await DescriptionDataMapper.addComment(data);
 
       res.status(200).json(result);
     } catch (error) {
