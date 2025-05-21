@@ -23,6 +23,21 @@ export default class DescriptionController extends CoreController {
     }
   }
 
+  static async getDecriptionByLocaleByStyle(req, res) {
+    const { locale, style } = req.params;
+
+    try {
+      const result = await DescriptionDataMapper.getDecriptionByLocaleByStyle(
+        locale,
+        style
+      );
+
+      res.status(200).json(result);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+
   static async getCommentByStyle(req, res) {
     const { style } = req.params;
 

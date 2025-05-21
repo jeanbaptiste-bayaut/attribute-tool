@@ -28,6 +28,37 @@
 
 .title {
   grid-area: title;
+
+  h3 {
+    text-align: left;
+    padding-left: 1em;
+  }
+
+  .locales {
+      background-color: #686565;
+      border-radius: 8px;
+      width: 500px;
+  
+  ul{
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    justify-content: center;
+    padding: 5px 0;
+
+    .active {
+      background-color: #899e72;
+      color: white;
+      border-radius: 8px;
+    }
+
+    li {
+      cursor: pointer;
+      padding: 2px 4px;
+      min-width: 2em;
+    }
+  }
+}
 }
 
 .description {
@@ -40,6 +71,7 @@
     overflow-y: auto;
     margin-bottom: 2em;
     padding: 0 1em;
+    text-align: left;
   }
 
   pre {

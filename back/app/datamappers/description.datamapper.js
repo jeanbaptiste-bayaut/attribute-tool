@@ -99,6 +99,26 @@ export default class DescriptionDataMapper extends CoreDataMapper {
     }
   }
 
+  static async getDecriptionByLocaleByStyle(locale, style) {
+    try {
+      const [productId] = await this.client.query(
+        `SELECT id FROM product WHERE style=?`,
+        [style]
+      );
+
+      const [result] = await this.client.query(
+        `SELECT * FROM ${locale} WHERE product_id = ?;`,
+        [productId[0].id]
+      );
+
+      return result[0];
+    } catch (error) {
+      throw new Error(
+        `Error fetching descriptions for locale ${locale}: ${error.message}`
+      );
+    }
+  }
+
   static async getCommentByStyle(style) {
     const [result] = await this.client.query(
       `SELECT comment 
