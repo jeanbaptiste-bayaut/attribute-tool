@@ -323,7 +323,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
           {product.product_color.toLocaleUpperCase()}
         </h3>
       </div>
-      {description && (
+      {description ? (
         <div className="description">
           <div className="text">
             <strong>Type :</strong> {description?.product_type}
@@ -468,6 +468,8 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
             </form>
           </Modal>
         </div>
+      ) : (
+        'No description available'
       )}
     </div>
   );
