@@ -13,6 +13,7 @@ CREATE TABLE user (
   password VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL UNIQUE,
   product_index INT NOT NULL DEFAULT 0,
+  locale_favorite VARCHAR(10) NOT NULL DEFAULT 'master',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

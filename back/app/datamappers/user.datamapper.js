@@ -96,4 +96,18 @@ export default class UserDataMapper extends CoreDataMapper {
 
     return productIndex[0];
   }
+
+  static async updateUserLocaleFavorite(locale, id) {
+    const [result] = await this.client.query(
+      `UPDATE ${this.tableName} SET locale_favorite = ? 
+      WHERE id = ?;`,
+      [locale, id]
+    );
+
+    if (result.affectedRows === 0) {
+      throw new Error('User not found');
+    }
+
+    return { locale_favorite: locale };
+  }
 }

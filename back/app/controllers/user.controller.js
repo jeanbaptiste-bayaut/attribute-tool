@@ -84,4 +84,15 @@ export default class UserController extends CoreController {
       return res.status(500).json({ message: error.message });
     }
   }
+
+  static async updateUserLocaleFavorite(req, res) {
+    const { id, locale } = req.body;
+    try {
+      const result = await UserDataMapper.updateUserLocaleFavorite(locale, id);
+
+      res.status(200).json(result);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
 }
