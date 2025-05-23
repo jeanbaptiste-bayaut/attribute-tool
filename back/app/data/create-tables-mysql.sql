@@ -5,7 +5,16 @@ USE attributetool;
 START TRANSACTION;
 
 -- Supprimer les tables si elles existent déjà
-DROP TABLE IF EXISTS product_has_attribute, product, english, french, german, spanish, italian, portuguese, dutch, attribute, value;
+DROP TABLE IF EXISTS product_has_attribute, comment, product, english, french, german, spanish, italian, portuguese, dutch, attribute, value, user;
+
+-- Table user
+CREATE TABLE user (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  password VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  product_index INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 -- Table attribute
 CREATE TABLE attribute (
