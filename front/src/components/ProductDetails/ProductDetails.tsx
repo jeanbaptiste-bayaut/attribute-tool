@@ -14,6 +14,8 @@ interface ProductDetailsProps {
     image_url: string;
     brand_name: string;
   } | null;
+  selectedLocale: string;
+  setSelectedLocale: (locale: string) => void;
 }
 
 interface DescriptionProps {
@@ -63,7 +65,9 @@ const customStyles = {
 
 Modal.setAppElement('#root');
 
-const ProductDetails = ({ product }: ProductDetailsProps) => {
+const ProductDetails = (
+  { product, selectedLocale }: ProductDetailsProps //setSelectedLocale: ProductDetailsProps
+) => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState<CommentProps>({
     style: '',
@@ -224,7 +228,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
 
   useEffect(() => {
     if (product) {
-      getDescription('english', product?.product_style);
+      getDescription(selectedLocale, product?.product_style);
     }
     // eslint-disable-next-line
   }, [product?.product_style]);

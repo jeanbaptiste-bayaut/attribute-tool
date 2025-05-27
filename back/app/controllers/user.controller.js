@@ -55,8 +55,6 @@ export default class UserController extends CoreController {
     try {
       const result = await UserDataMapper.login(email, password);
 
-      console.log(result);
-
       res.status(200).json(result);
     } catch (error) {
       return res.status(500).json({ message: error.message });
