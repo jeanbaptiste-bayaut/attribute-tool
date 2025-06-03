@@ -52,6 +52,7 @@ CREATE TABLE english (
   product_characteristic LONGTEXT,
   product_composition LONGTEXT,
   product_id INT NOT NULL,
+  status BOOLEAN NOT NULL DEFAULT FALSE,
   CONSTRAINT fk_english_product FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
@@ -65,6 +66,7 @@ CREATE TABLE french (
   product_characteristic LONGTEXT,
   product_composition LONGTEXT,
   product_id INT NOT NULL,
+  status BOOLEAN NOT NULL DEFAULT FALSE,
   CONSTRAINT fk_french_product FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
@@ -78,6 +80,7 @@ CREATE TABLE german (
   product_characteristic LONGTEXT,
   product_composition LONGTEXT,
   product_id INT NOT NULL,
+  status BOOLEAN NOT NULL DEFAULT FALSE,
   CONSTRAINT fk_german_product FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
@@ -91,6 +94,7 @@ CREATE TABLE spanish (
   product_characteristic LONGTEXT,
   product_composition LONGTEXT,
   product_id INT NOT NULL,
+  status BOOLEAN NOT NULL DEFAULT FALSE,
   CONSTRAINT fk_spanish_product FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
@@ -104,6 +108,7 @@ CREATE TABLE italian (
   product_characteristic LONGTEXT,
   product_composition LONGTEXT,
   product_id INT NOT NULL,
+  status BOOLEAN NOT NULL DEFAULT FALSE,
   CONSTRAINT fk_italian_product FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
@@ -117,6 +122,7 @@ CREATE TABLE portuguese (
   product_characteristic LONGTEXT,
   product_composition LONGTEXT,
   product_id INT NOT NULL,
+  status BOOLEAN NOT NULL DEFAULT FALSE,
   CONSTRAINT fk_portuguese_product FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
@@ -130,6 +136,7 @@ CREATE TABLE dutch (
   product_characteristic LONGTEXT,
   product_composition LONGTEXT,
   product_id INT NOT NULL,
+  status BOOLEAN NOT NULL DEFAULT FALSE,
   CONSTRAINT fk_dutch_product FOREIGN KEY (product_id) REFERENCES product(id)
 );
 

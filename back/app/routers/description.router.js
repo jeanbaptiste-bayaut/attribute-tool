@@ -4,6 +4,11 @@ import DescriptionController from '../controllers/description.controller.js';
 const router = Router();
 
 router.get(
+  '/api/descriptions/status/:style',
+  DescriptionController.getLocaleStatus.bind(DescriptionController)
+);
+
+router.get(
   '/api/descriptions/:locale/:style',
   DescriptionController.getDecriptionByLocaleByStyle.bind(DescriptionController)
 );
@@ -16,6 +21,11 @@ router.get(
 router.post(
   '/api/descriptions/comment',
   DescriptionController.addComment.bind(DescriptionController)
+);
+
+router.post(
+  '/api/descriptions/locale-status',
+  DescriptionController.updateLocaleStatus.bind(DescriptionController)
 );
 
 export default router;

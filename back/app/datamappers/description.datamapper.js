@@ -159,4 +159,53 @@ export default class DescriptionDataMapper extends CoreDataMapper {
 
     return result[0];
   }
+
+  static async updateLocaleStatus(locale, status, product) {
+    const localeMapped = this.languageMapping.find(
+      (lang) => lang.code === locale
+    );
+
+    try {
+      const [result] = await this.client.query(
+        `UPDATE ${localeMapped.locale} SET status = ? WHERE product_id = (SELECT id FROM product WHERE style = ?);`,
+        [status, product]
+      );
+
+      return result[0];
+    } catch (error) {
+      throw new Error(
+        `Error updating locale status for ${locale} and product ${product}: ${error.message}`
+      );
+    }
+  }
+
+  static async getLocaleStatus(product) {
+    const [result] = await this.client.query(
+      `SELECT 
+        product.style, 
+        english.status as master, 
+        french.status as fr, 
+        spanish.status as es, 
+        dutch.status as nl, 
+        portuguese.status as pt, 
+        german.status as de, 
+        italian.status as it
+      FROM product
+        JOIN english on product.id = english.product_id
+        JOIN french on  product.id = french.product_id
+        JOIN spanish on product.id = spanish.product_id
+        JOIN dutch on product.id = dutch.product_id
+        JOIN portuguese on product.id = portuguese.product_id
+        JOIN german on product.id = german.product_id
+        JOIN italian on product.id = italian.product_id
+      WHERE product.style = ?;`,
+      [product]
+    );
+
+    if (result.length === 0) {
+      throw new Error(`No locale status found for product ${product}`);
+    }
+
+    return result[0];
+  }
 }
