@@ -79,10 +79,10 @@ export default class DescriptionController extends CoreController {
   }
 
   static async getLocaleStatus(req, res) {
-    const { style } = req.params;
+    const { locale, style } = req.params;
 
     try {
-      const result = await DescriptionDataMapper.getLocaleStatus(style);
+      const result = await DescriptionDataMapper.getLocaleStatus(locale, style);
 
       res.status(200).json(result);
     } catch (error) {

@@ -4,7 +4,7 @@ import ProductController from '../controllers/product.controller.js';
 const router = Router();
 
 router.get(
-  '/api/products/:brand/:season',
+  '/api/products/:brand/:season/:locale',
   ProductController.getAllProducts.bind(ProductController)
 );
 router.patch(

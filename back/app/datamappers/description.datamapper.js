@@ -15,15 +15,15 @@ function cleanKeys(obj) {
 
 export default class DescriptionDataMapper extends CoreDataMapper {
   static tableName = 'description';
-  static languageMapping = [
-    { code: 'master', locale: 'english' },
-    { code: 'fr', locale: 'french' },
-    { code: 'de', locale: 'german' },
-    { code: 'it', locale: 'italian' },
-    { code: 'es', locale: 'spanish' },
-    { code: 'nl', locale: 'dutch' },
-    { code: 'pt', locale: 'portuguese' },
-  ];
+  // static languageMapping = [
+  //   { code: 'master', locale: 'english' },
+  //   { code: 'fr', locale: 'french' },
+  //   { code: 'de', locale: 'german' },
+  //   { code: 'it', locale: 'italian' },
+  //   { code: 'es', locale: 'spanish' },
+  //   { code: 'nl', locale: 'dutch' },
+  //   { code: 'pt', locale: 'portuguese' },
+  // ];
 
   static async uploadDescriptions(filePath) {
     const results = [];
@@ -111,6 +111,12 @@ export default class DescriptionDataMapper extends CoreDataMapper {
         [productId[0].id]
       );
 
+      if (result.length === 0) {
+        return {
+          message: `No description found for style ${style} in locale ${locale}`,
+        };
+      }
+
       return result[0];
     } catch (error) {
       throw new Error(
@@ -179,32 +185,11 @@ export default class DescriptionDataMapper extends CoreDataMapper {
     }
   }
 
-  static async getLocaleStatus(product) {
+  static async getLocaleStatus(locale, style) {
     const [result] = await this.client.query(
-      `SELECT 
-        product.style, 
-        english.status as master, 
-        french.status as fr, 
-        spanish.status as es, 
-        dutch.status as nl, 
-        portuguese.status as pt, 
-        german.status as de, 
-        italian.status as it
-      FROM product
-        JOIN english on product.id = english.product_id
-        JOIN french on  product.id = french.product_id
-        JOIN spanish on product.id = spanish.product_id
-        JOIN dutch on product.id = dutch.product_id
-        JOIN portuguese on product.id = portuguese.product_id
-        JOIN german on product.id = german.product_id
-        JOIN italian on product.id = italian.product_id
-      WHERE product.style = ?;`,
-      [product]
+      `SELECT id, status from ${locale} WHERE product_id = (SELECT id from product where style = ?);`,
+      [style]
     );
-
-    if (result.length === 0) {
-      throw new Error(`No locale status found for product ${product}`);
-    }
 
     return result[0];
   }

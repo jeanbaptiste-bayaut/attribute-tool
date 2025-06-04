@@ -4,7 +4,7 @@ import DescriptionController from '../controllers/description.controller.js';
 const router = Router();
 
 router.get(
-  '/api/descriptions/status/:style',
+  '/api/descriptions/status/:locale/:style',
   DescriptionController.getLocaleStatus.bind(DescriptionController)
 );
 

@@ -37,7 +37,7 @@ function ControlPage() {
         process.env.NODE_ENV === 'production'
           ? import.meta.env.VITE_API_URL
           : import.meta.env.VITE_API_URL_DEV
-      }/api/products/${brand}/${season}`
+      }/api/products/${brand}/${season}/${selectedLocale}`
     );
     result.data.map((product: Product) => {
       product.brand_name = brand;

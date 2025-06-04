@@ -42,15 +42,9 @@ interface CommentProps {
   portuguese: boolean;
 }
 
-interface DescriptionStatusProps {
-  style: string;
-  master: boolean;
-  de: boolean;
-  fr: boolean;
-  es: boolean;
-  it: boolean;
-  nl: boolean;
-  pt: boolean;
+interface LocaleStatusProps {
+  locale: string;
+  status: boolean;
 }
 
 type LocaleKey =
@@ -93,9 +87,8 @@ const ProductDetails = (
     portuguese: false,
   });
   const [commentSent, setCommentSent] = useState(false);
-  const [descriptionStatus, setDescriptionStatus] =
-    useState<DescriptionStatusProps>();
   const [description, setDescription] = useState<DescriptionProps>();
+  const [localeStatus, setLocaleStatus] = useState<LocaleStatusProps[]>();
 
   function openModal() {
     setIsOpen(true);
@@ -107,7 +100,7 @@ const ProductDetails = (
   }
 
   async function handleSubmitLocaleStatus() {
-    console.log(`Updating locale status for ${selectedLocale}...`);
+    console.log(`Updating locale status for ${description?.locale}...`);
 
     try {
       await axios.post(
@@ -124,25 +117,52 @@ const ProductDetails = (
       );
       if (description) {
         setDescription({ ...description, status: true });
+        setLocaleStatus([
+          ...(localeStatus ?? []),
+          { locale: description.locale, status: true },
+        ]);
       }
-      console.log(`Locale status for ${selectedLocale} updated successfully.`);
+      console.log(
+        `Locale status for ${description?.locale} updated successfully.`
+      );
     } catch (error) {
       console.error('Error updating locale status:', error);
     }
   }
 
+  async function getStatusByLocale(style: string | undefined) {
+    try {
+      //vérifier les locales qui ont une description
+      const locales = [
+        'english',
+        'german',
+        'french',
+        'spanish',
+        'italian',
+        'dutch',
+        'portuguese',
+      ];
+      const localesStatus = [];
+
+      for (const locale of locales) {
+        const status = await axios.get(
+          `${
+            process.env.NODE_ENV === 'production'
+              ? import.meta.env.VITE_API_URL
+              : import.meta.env.VITE_API_URL_DEV
+          }/api/descriptions/status/${locale}/${style}`
+        );
+        localesStatus.push({ locale: locale, status: status.data.status });
+      }
+
+      setLocaleStatus(localesStatus);
+    } catch (error) {
+      console.error('Error fetching status by locale:', error);
+    }
+  }
+
   async function getDescription(locale: string, style: string | undefined) {
     try {
-      const statusResult = await axios.get(
-        `${
-          process.env.NODE_ENV === 'production'
-            ? import.meta.env.VITE_API_URL
-            : import.meta.env.VITE_API_URL_DEV
-        }/api/descriptions/status/${style}`
-      );
-      if (statusResult.data) {
-        setDescriptionStatus(statusResult.data);
-      }
       const result = await axios.get(
         `${
           process.env.NODE_ENV === 'production'
@@ -275,9 +295,16 @@ const ProductDetails = (
     return htmlOutput;
   }
 
+  function isLocaleChecked(locale: string[]) {
+    return localeStatus?.some(
+      (row) => locale.includes(row.locale) && row.status
+    );
+  }
+
   useEffect(() => {
     if (product) {
       getDescription(selectedLocale, product?.product_style);
+      getStatusByLocale(product?.product_style);
     }
     // eslint-disable-next-line
   }, [product?.product_style]);
@@ -301,10 +328,7 @@ const ProductDetails = (
               className={
                 'english' +
                 (description?.locale === 'master' ? ' active' : '') +
-                ((description?.locale === 'master' && description?.status) ||
-                descriptionStatus?.master
-                  ? ' checked'
-                  : '')
+                (isLocaleChecked(['english', 'master']) ? ' checked' : '')
               }
               onClick={() => {
                 getDescription('english', product.product_style);
@@ -316,10 +340,7 @@ const ProductDetails = (
               className={
                 'german' +
                 (description?.locale === 'de' ? ' active' : '') +
-                ((description?.locale === 'de' && description?.status) ||
-                descriptionStatus?.de
-                  ? ' checked'
-                  : '')
+                (isLocaleChecked(['german', 'de']) ? ' checked' : '')
               }
               onClick={() => {
                 getDescription('german', product.product_style);
@@ -331,10 +352,7 @@ const ProductDetails = (
               className={
                 'french' +
                 (description?.locale === 'fr' ? ' active' : '') +
-                ((description?.locale === 'fr' && description?.status) ||
-                descriptionStatus?.fr
-                  ? ' checked'
-                  : '')
+                (isLocaleChecked(['french', 'fr']) ? ' checked' : '')
               }
               onClick={() => {
                 getDescription('french', product.product_style);
@@ -346,10 +364,7 @@ const ProductDetails = (
               className={
                 'spanish' +
                 (description?.locale === 'es' ? ' active' : '') +
-                ((description?.locale === 'es' && description?.status) ||
-                descriptionStatus?.es
-                  ? ' checked'
-                  : '')
+                (isLocaleChecked(['spanish', 'es']) ? ' checked' : '')
               }
               onClick={() => {
                 getDescription('spanish', product.product_style);
@@ -361,10 +376,7 @@ const ProductDetails = (
               className={
                 'italian' +
                 (description?.locale === 'it' ? ' active' : '') +
-                ((description?.locale === 'it' && description?.status) ||
-                descriptionStatus?.it
-                  ? ' checked'
-                  : '')
+                (isLocaleChecked(['italian', 'it']) ? ' checked' : '')
               }
               onClick={() => {
                 getDescription('italian', product.product_style);
@@ -376,10 +388,7 @@ const ProductDetails = (
               className={
                 'dutch' +
                 (description?.locale === 'nl' ? ' active' : '') +
-                ((description?.locale === 'nl' && description?.status) ||
-                descriptionStatus?.nl
-                  ? ' checked'
-                  : '')
+                (isLocaleChecked(['dutch', 'nl']) ? ' checked' : '')
               }
               onClick={() => {
                 getDescription('dutch', product.product_style);
@@ -391,10 +400,7 @@ const ProductDetails = (
               className={
                 'portuguese' +
                 (description?.locale === 'pt' ? ' active' : '') +
-                ((description?.locale === 'pt' && description?.status) ||
-                descriptionStatus?.pt
-                  ? ' checked'
-                  : '')
+                (isLocaleChecked(['portuguese', 'pt']) ? ' checked' : '')
               }
               onClick={() => {
                 getDescription('portuguese', product.product_style);
@@ -404,12 +410,9 @@ const ProductDetails = (
             </li>
           </ul>
         </div>
-        <h3>
-          {description?.label}
-          <br />
-          {product.product_style.toLocaleUpperCase()} -{' '}
-          {product.product_color.toLocaleUpperCase()}
-        </h3>
+        <p style={{ textAlign: 'left' }}>
+          {description?.label} - {product.product_style.toLocaleUpperCase()}
+        </p>
       </div>
       {description ? (
         <div className="description">
@@ -446,8 +449,8 @@ const ProductDetails = (
                 style={{ color: '#63E6BE' }}
               />
             )}
+            <button onClick={handleSubmitLocaleStatus}>Checked</button>
           </div>
-          <button onClick={handleSubmitLocaleStatus}>Checked</button>
           <Modal
             isOpen={modalIsOpen}
             onRequestClose={closeModal}
