@@ -23,6 +23,21 @@ export default class DescriptionController extends CoreController {
     }
   }
 
+  static async getDecriptionByLocaleByStyle(req, res) {
+    const { locale, style } = req.params;
+
+    try {
+      const result = await DescriptionDataMapper.getDecriptionByLocaleByStyle(
+        locale,
+        style
+      );
+
+      res.status(200).json(result);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+
   static async getCommentByStyle(req, res) {
     const { style } = req.params;
 
@@ -36,10 +51,38 @@ export default class DescriptionController extends CoreController {
   }
 
   static async addComment(req, res) {
-    const { comment, style } = req.body;
+    const data = req.body;
 
     try {
-      const result = await DescriptionDataMapper.addComment(comment, style);
+      const result = await DescriptionDataMapper.addComment(data);
+
+      res.status(200).json(result);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+
+  static async updateLocaleStatus(req, res) {
+    const { locale, status, product } = req.body;
+
+    try {
+      const result = await DescriptionDataMapper.updateLocaleStatus(
+        locale,
+        status,
+        product
+      );
+
+      res.status(200).json(result);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+
+  static async getLocaleStatus(req, res) {
+    const { locale, style } = req.params;
+
+    try {
+      const result = await DescriptionDataMapper.getLocaleStatus(locale, style);
 
       res.status(200).json(result);
     } catch (error) {

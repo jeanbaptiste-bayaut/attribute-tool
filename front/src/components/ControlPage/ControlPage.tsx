@@ -27,6 +27,7 @@ function ControlPage() {
   const [seasons, setSeasons] = useState([{ season_name: '' }]);
   const [selectedBrand, setSelectedBrand] = useState('');
   const [selectedSeason, setSelectedSeason] = useState('');
+  const [selectedLocale, setSelectedLocale] = useState('master');
   const [validated, setValidated] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -36,7 +37,7 @@ function ControlPage() {
         process.env.NODE_ENV === 'production'
           ? import.meta.env.VITE_API_URL
           : import.meta.env.VITE_API_URL_DEV
-      }/api/products/${brand}/${season}`
+      }/api/products/${brand}/${season}/${selectedLocale}`
     );
     result.data.map((product: Product) => {
       product.brand_name = brand;
@@ -93,6 +94,12 @@ function ControlPage() {
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setSelectedSeason(e.target.value);
+  };
+
+  const handleChangeSelectLocale = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setSelectedLocale(e.target.value);
   };
 
   const getAttributesList = async (index: number) => {
@@ -221,6 +228,16 @@ function ControlPage() {
                 </option>
               ))}
             </select>
+            <select name="locale" onChange={handleChangeSelectLocale}>
+              <option defaultValue="">Select a locale</option>
+              <option value="english">English</option>
+              <option value="french">French</option>
+              <option value="spanish">Spanish</option>
+              <option value="german">German</option>
+              <option value="italian">Italian</option>
+              <option value="portuguese">Portuguese</option>
+              <option value="dutch">Dutch</option>
+            </select>
             <button type="submit">Filter</button>
           </form>
         </div>
@@ -228,7 +245,11 @@ function ControlPage() {
       </header>
 
       <div className="grid-container">
-        <ProductDetails product={products[currentIndex]} />
+        <ProductDetails
+          product={products[currentIndex]}
+          selectedLocale={selectedLocale}
+          setSelectedLocale={setSelectedLocale}
+        />
         <AttributeList
           attributes={attributeList}
           checkedState={checkedState}

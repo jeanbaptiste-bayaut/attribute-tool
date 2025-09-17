@@ -5,7 +5,17 @@ USE attributetool;
 START TRANSACTION;
 
 -- Supprimer les tables si elles existent déjà
-DROP TABLE IF EXISTS product_has_attribute, product, english, french, german, spanish, italian, portuguese, dutch, attribute, value;
+DROP TABLE IF EXISTS product_has_attribute, comment, product, english, french, german, spanish, italian, portuguese, dutch, attribute, value, user;
+
+-- Table user
+CREATE TABLE user (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  password VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  product_index INT NOT NULL DEFAULT 0,
+  locale_favorite VARCHAR(10) NOT NULL DEFAULT 'master',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 -- Table attribute
 CREATE TABLE attribute (
@@ -42,6 +52,7 @@ CREATE TABLE english (
   product_characteristic LONGTEXT,
   product_composition LONGTEXT,
   product_id INT NOT NULL,
+  status BOOLEAN NOT NULL DEFAULT FALSE,
   CONSTRAINT fk_english_product FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
@@ -55,6 +66,7 @@ CREATE TABLE french (
   product_characteristic LONGTEXT,
   product_composition LONGTEXT,
   product_id INT NOT NULL,
+  status BOOLEAN NOT NULL DEFAULT FALSE,
   CONSTRAINT fk_french_product FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
@@ -68,6 +80,7 @@ CREATE TABLE german (
   product_characteristic LONGTEXT,
   product_composition LONGTEXT,
   product_id INT NOT NULL,
+  status BOOLEAN NOT NULL DEFAULT FALSE,
   CONSTRAINT fk_german_product FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
@@ -81,6 +94,7 @@ CREATE TABLE spanish (
   product_characteristic LONGTEXT,
   product_composition LONGTEXT,
   product_id INT NOT NULL,
+  status BOOLEAN NOT NULL DEFAULT FALSE,
   CONSTRAINT fk_spanish_product FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
@@ -94,6 +108,7 @@ CREATE TABLE italian (
   product_characteristic LONGTEXT,
   product_composition LONGTEXT,
   product_id INT NOT NULL,
+  status BOOLEAN NOT NULL DEFAULT FALSE,
   CONSTRAINT fk_italian_product FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
@@ -107,6 +122,7 @@ CREATE TABLE portuguese (
   product_characteristic LONGTEXT,
   product_composition LONGTEXT,
   product_id INT NOT NULL,
+  status BOOLEAN NOT NULL DEFAULT FALSE,
   CONSTRAINT fk_portuguese_product FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
@@ -120,6 +136,7 @@ CREATE TABLE dutch (
   product_characteristic LONGTEXT,
   product_composition LONGTEXT,
   product_id INT NOT NULL,
+  status BOOLEAN NOT NULL DEFAULT FALSE,
   CONSTRAINT fk_dutch_product FOREIGN KEY (product_id) REFERENCES product(id)
 );
 
@@ -135,6 +152,21 @@ CREATE TABLE product_has_attribute (
   CONSTRAINT fk_pha_value FOREIGN KEY (value_id) REFERENCES value(id),
   CONSTRAINT unique_attribute_value UNIQUE (product_id, attribute_id, value_id)
 );
+
+-- Table commentaire
+CREATE TABLE comment (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  product_id INT NOT NULL,
+  comment LONGTEXT NOT NULL,
+  english boolean NOT NULL DEFAULT FALSE,
+  french boolean NOT NULL DEFAULT FALSE,
+  german boolean NOT NULL DEFAULT FALSE,
+  spanish boolean NOT NULL DEFAULT FALSE,
+  italian boolean NOT NULL DEFAULT FALSE,
+  portuguese boolean NOT NULL DEFAULT FALSE,
+  dutch boolean NOT NULL DEFAULT FALSE,
+  CONSTRAINT fk_comment_product FOREIGN KEY (product_id) REFERENCES product(id)
+)
 
 -- Clé unique composite dans la table value
 ALTER TABLE value ADD CONSTRAINT unique_name_attribute UNIQUE (name, attribute_id);

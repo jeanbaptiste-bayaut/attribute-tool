@@ -29,15 +29,27 @@ export default class ExportDataMapper extends CoreDataMapper {
         product.style as style, 
         product.name as style_name,
         value.name as brand,
-        description.description as description,
-        description.comment as comment
+        english.label,
+        english.product_type as product_type,
+        english.product_description,
+        english.product_characteristic,
+        english.product_composition,
+        comment.comment as comment,
+        comment.english as english,
+        comment.french as french,
+        comment.german as german,
+        comment.spanish as spanish,
+        comment.italian as italian,
+        comment.portuguese as portuguese,
+        comment.dutch as dutch
       FROM product
         JOIN product_has_attribute on product.id = product_has_attribute.product_id
         JOIN attribute on product_has_attribute.attribute_id = attribute.id
         JOIN value on product_has_attribute.value_id = value.id
-        JOIN description on product.description_id = description.id
+        JOIN english on english.product_id = product.id
+        JOIN comment on comment.product_id = product.id
       WHERE attribute.name = 'division'
-        AND description.comment IS NOT NULL
+        AND comment.comment IS NOT NULL
         AND product.season = ?;`,
       [season]
     );

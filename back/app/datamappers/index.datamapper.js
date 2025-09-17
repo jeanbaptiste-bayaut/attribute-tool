@@ -6,7 +6,9 @@ import UploadProductDataMapper from './uploadProduct.datamapper.js';
 import ValueDataMapper from './value.datamapper.js';
 import ProductHasAttributeDataMapper from './product_has_attribute.datamapper.js';
 import ExportDataMapper from './export.datamapper.js';
+import UserDataMapper from './user.datamapper.js';
 
+UserDataMapper.init({ client });
 ProductDataMapper.init({ client });
 DescriptionDataMapper.init({ client });
 AttributeDataMapper.init({ client });
@@ -16,6 +18,7 @@ ProductHasAttributeDataMapper.init({ client });
 ExportDataMapper.init({ client });
 
 export {
+  UserDataMapper,
   ProductDataMapper,
   DescriptionDataMapper,
   AttributeDataMapper,

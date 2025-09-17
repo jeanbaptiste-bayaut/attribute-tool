@@ -1,6 +1,14 @@
 import './Leftnav.scss';
+import { useAuth } from '../../context/AuthContext';
 
 function Leftnav() {
+  const { userName, logout } = useAuth();
+  const isAuthenticated = userName;
+
+  const handleLogout = () => {
+    logout();
+  };
+
   const hideNav = () => {
     const nav = document.querySelector('nav');
     nav?.classList.remove('open');
@@ -40,6 +48,13 @@ function Leftnav() {
           </a>
         </li>
       </ul>
+      {isAuthenticated && (
+        <div className="logout">
+          <a href="/" onClick={handleLogout}>
+            Logout
+          </a>
+        </div>
+      )}
     </nav>
   );
 }

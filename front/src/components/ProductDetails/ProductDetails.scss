@@ -28,6 +28,43 @@
 
 .title {
   grid-area: title;
+  padding: 0 1em;
+
+  h3 {
+    text-align: left;
+    padding-left: 1em;
+  }
+
+  .locales {
+      background-color: #686565;
+      border-radius: 8px;
+      width: 400px;
+  
+  ul{
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    justify-content: center;
+    padding: 5px 0;
+
+    .active {
+      background-color: #899e72;
+      color: white;
+      border-radius: 8px;
+    }
+
+    .checked {
+      background-color: #18971a7a;
+      border-radius: 9px;
+    }
+
+    li {
+      cursor: pointer;
+      padding: 2px 4px;
+      min-width: 2em;
+    }
+  }
+}
 }
 
 .description {
@@ -36,15 +73,15 @@
   flex-direction: column;
 
   .text {
-    max-height: 400px;
+    max-height: 300px;
     overflow-y: auto;
-    margin-bottom: 2em;
+    margin-bottom: 10px;
     padding: 0 1em;
+    text-align: left;
   }
 
   pre {
     text-align: left;
-    padding: 10px;
     word-break: break-word;
     white-space: pre-wrap;
     font-size: 16px;
@@ -67,6 +104,7 @@
     justify-content: center;
     align-items: center;
     gap: 1em;
+    margin-bottom: 10px;
   }
 }
 
@@ -140,8 +178,17 @@
   flex-direction: column;
   gap: 1em;
 
+  .locales-list {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+
+    label {
+      color: #3B3B3B;
+    }
+  }
+
   .textarea {
-    margin-top: 2em;
     height: 200px;
     width: 450px;
     vertical-align: top;

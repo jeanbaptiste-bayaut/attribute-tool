@@ -3,22 +3,39 @@ import CoreDataMapper from './core.datamapper.js';
 export default class ProductDataMapper extends CoreDataMapper {
   static tableName = 'product';
 
-  static async findAllProducts(brand, season) {
+  static async findAllProducts(brand, season, locale) {
+    const localeMapped = this.languageMapping.find(
+      (lang) => lang.locale === locale
+    );
+
     const [result] = await this.client.query(
       `
-      SELECT product.id as product_id, 
+       SELECT 
+	    product.id as product_id,
+	    product.name as product_name, 
       product.style as product_style,
       product.color as product_color, 
-      product.name as product_name, 
-      description.description as product_description,
-      product.image_url as image_url
-      FROM product
-      JOIN description ON product.description_id = description.id
-      JOIN product_has_attribute ON product_has_attribute.product_id = product.id
-      JOIN value ON product_has_attribute.value_id = value.id
-      WHERE product.status = 'false'
-      AND product.season=?
-      AND value.name=?;`,
+      product.image_url as image_url,
+      english.status as master, 
+      french.status as fr, 
+      spanish.status as es, 
+      dutch.status as nl, 
+      portuguese.status as pt, 
+      german.status as de, 
+      italian.status as it
+FROM product_has_attribute
+  JOIN product on product.id = product_has_attribute.product_id
+  LEFT JOIN english on product.id = english.product_id
+  LEFT JOIN french on  product.id = french.product_id
+  LEFT JOIN spanish on product.id = spanish.product_id
+  LEFT JOIN dutch on product.id = dutch.product_id
+  LEFT JOIN portuguese on product.id = portuguese.product_id
+  LEFT JOIN german on product.id = german.product_id
+  LEFT JOIN italian on product.id = italian.product_id
+WHERE product.status = 'false'
+  AND product.season = ?
+  AND product_has_attribute.value_id = (SELECT id FROM value WHERE name = ?)
+ORDER BY ${localeMapped.locale}.status ASC;`,
       [season, brand]
     );
 
@@ -27,10 +44,9 @@ export default class ProductDataMapper extends CoreDataMapper {
 
   static async findProductWithAttributeByPk(id) {
     const [result] = await this.client.query(
-      `SELECT product.id as product_id, product.style as product_style, product.name as product_name, description.description as product_description,
+      `SELECT product.id as product_id, product.style as product_style, product.name as product_name,
       attribute.name as attribute_name, value.name as value_name, product.image_url as image_url 
       FROM product
-      JOIN description ON product.description_id = description.id
       JOIN product_has_attribute ON product.id = product_has_attribute.product_id
       JOIN attribute ON product_has_attribute.attribute_id = attribute.id
       JOIN value ON product_has_attribute.value_id = value.id
