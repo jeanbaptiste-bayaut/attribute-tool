@@ -8,6 +8,10 @@ router.get(
   '/api/values/name/:id/:name',
   ValueController.getValuesByNameAttributeId.bind(ValueController)
 );
+router.get(
+  '/api/values/:name',
+  ValueController.getValuesByAttribute.bind(ValueController)
+);
 router.get('/api/brands', ValueController.getBrandSList.bind(ValueController));
 router.get(
   '/api/seasons',

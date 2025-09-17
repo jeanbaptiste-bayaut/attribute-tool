@@ -27,4 +27,13 @@ export default class ValueDataMapper extends CoreDataMapper {
     );
     return result;
   }
+
+  static async findValuesByAttribute(attributeName) {
+    const [result] = await this.client.query(
+      `SELECT * FROM value
+      WHERE attribute_id = (SELECT id FROM attribute WHERE name = ?);`,
+      [attributeName]
+    );
+    return result;
+  }
 }

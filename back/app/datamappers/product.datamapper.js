@@ -32,11 +32,11 @@ FROM product_has_attribute
   LEFT JOIN portuguese on product.id = portuguese.product_id
   LEFT JOIN german on product.id = german.product_id
   LEFT JOIN italian on product.id = italian.product_id
-WHERE product_has_attribute.value_id = (SELECT id FROM value WHERE name = ?)
-  AND product.status = 'false'
+WHERE product.status = 'false'
   AND product.season = ?
+  AND product_has_attribute.value_id = (SELECT id FROM value WHERE name = ?)
 ORDER BY ${localeMapped.locale}.status ASC;`,
-      [brand, season]
+      [season, brand]
     );
 
     return result;
