@@ -3,10 +3,10 @@ import CoreDataMapper from './core.datamapper.js';
 export default class ProductDataMapper extends CoreDataMapper {
   static tableName = 'product';
 
-  static async findAllProducts(brand, season, locale) {
-    const localeMapped = this.languageMapping.find(
-      (lang) => lang.locale === locale
-    );
+  static async findAllProducts(brand, season) {
+    // const localeMapped = this.languageMapping.find(
+    //   (lang) => lang.locale === locale
+    // );
 
     const [result] = await this.client.query(
       `
@@ -34,10 +34,24 @@ FROM product_has_attribute
   LEFT JOIN italian on product.id = italian.product_id
 WHERE product.status = 'false'
   AND product.season = ?
-  AND product_has_attribute.value_id = (SELECT id FROM value WHERE name = ?)
-ORDER BY ${localeMapped.locale}.status ASC;`,
+  AND product_has_attribute.value_id = (SELECT id FROM value WHERE name = ?);`,
       [season, brand]
     );
+
+    const [parentTypes] = await this.client.query(
+      `
+      SELECT product_has_attribute.product_id as productId, value.name as parentType from product_has_attribute
+      JOIN attribute on attribute.id = product_has_attribute.attribute_id
+      JOIN value on value.id = product_has_attribute.value_id
+      WHERE attribute.name = 'parent_type';
+      `
+    );
+
+    result.map((product) => {
+      product['parent_type'] = parentTypes.find(
+        (parentType) => product.product_id == parentType.productId
+      ).parentType;
+    });
 
     return result;
   }
@@ -45,7 +59,7 @@ ORDER BY ${localeMapped.locale}.status ASC;`,
   static async findProductWithAttributeByPk(id) {
     const [result] = await this.client.query(
       `SELECT product.id as product_id, product.style as product_style, product.name as product_name,
-      attribute.name as attribute_name, value.name as value_name, product.image_url as image_url 
+      attribute.name as attribute_name, value.name as value_name, product.image_url as image_url, product_has_attribute.status as status
       FROM product
       JOIN product_has_attribute ON product.id = product_has_attribute.product_id
       JOIN attribute ON product_has_attribute.attribute_id = attribute.id

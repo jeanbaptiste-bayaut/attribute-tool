@@ -18,14 +18,10 @@ export default class ProductController extends CoreController {
   }
 
   static async getAllProducts(req, res) {
-    const { brand, season, locale } = req.params;
+    const { brand, season } = req.params;
 
     try {
-      const result = await ProductDataMapper.findAllProducts(
-        brand,
-        season,
-        locale
-      );
+      const result = await ProductDataMapper.findAllProducts(brand, season);
 
       res.status(200).json(result);
     } catch (error) {

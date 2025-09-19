@@ -48,4 +48,16 @@ export default class DescriptionController extends CoreController {
       return res.status(500).json({ message: error.message });
     }
   }
+
+  static async findParentTypesPerBrand(req, res) {
+    try {
+      const { brand } = req.params;
+
+      const result = await ValueDataMapper.findParentTypesPerBrand(brand);
+
+      res.status(200).json(result);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
 }

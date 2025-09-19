@@ -1,0 +1,64 @@
+import { useEffect, useState } from 'react';
+import useAttributes from '../stores/useAttributes';
+import { getAttributesListById } from '../api/get-attributes';
+import useProducts from '../stores/useProducts';
+
+const Attributes = () => {
+  const { attributes, setAllAttributes, resetAttributes } = useAttributes();
+  const { index, products } = useProducts();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (products.length === 0) return;
+
+    getAttributesListById(parseInt(products[index]?.product_id))
+      .then((data) => {
+        setAllAttributes(data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching attributes:', error);
+        setIsLoading(false);
+      });
+  }, [setAllAttributes, index, products, resetAttributes]);
+
+  // Fonction pour changer le status d'un attribut
+  const handleOnChange = (idx: number) => {
+    const updated = attributes.map((attr, i) =>
+      i === idx ? { ...attr, status: !attr.status } : attr
+    );
+    setAllAttributes(updated);
+  };
+
+  return (
+    <>
+      {isLoading ? (
+        <div>Loading attributes...</div>
+      ) : (
+        <div className="control-attributes">
+          <ul>
+            {attributes.map((attribute, idx) => (
+              <li key={idx} className="attribute-list-container">
+                <span>{attribute.attribute_name}</span>
+                <span>{attribute.value_name}</span>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    id={`switch-${idx}`}
+                    name={`${attribute.attribute_name}:${attribute.value_name}`}
+                    value={`${attribute.attribute_name}:${attribute.value_name}`}
+                    checked={attribute.status}
+                    onChange={() => handleOnChange(idx)}
+                  />
+                  <span className="slider"></span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default Attributes;

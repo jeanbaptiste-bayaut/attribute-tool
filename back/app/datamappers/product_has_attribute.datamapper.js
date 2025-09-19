@@ -6,8 +6,9 @@ export default class ProductHasAttributeDataMapper extends CoreDataMapper {
   static async updateStatus(data) {
     try {
       data.forEach(async (product) => {
-        await this.client.query(
-          `
+        if (product.status == 0) {
+          await this.client.query(
+            `
       UPDATE ${this.tableName}
       SET status = FALSE
       WHERE product_id = (SELECT id from product WHERE style = ?)
@@ -18,13 +19,16 @@ export default class ProductHasAttributeDataMapper extends CoreDataMapper {
         AND value.attribute_id = (SELECT id from attribute WHERE attribute.name = ?)
         );
       `,
-          [
-            product.product_style,
-            product.attribute_name,
-            product.value_name,
-            product.attribute_name,
-          ]
-        );
+            [
+              product.product_style,
+              product.attribute_name,
+              product.value_name,
+              product.attribute_name,
+            ]
+          );
+        } else {
+          return;
+        }
       });
 
       return {
