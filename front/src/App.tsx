@@ -5,6 +5,11 @@ import axios from 'axios';
 import { useAuth } from './context/AuthContext';
 import './styles/components/_control.scss';
 
+// PrimeReact styles
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+
 function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

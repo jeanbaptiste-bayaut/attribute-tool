@@ -5,7 +5,7 @@ import './ControlPage.scss';
 import ProductNavigation from '../ProductNavigation/ProductNavigation';
 import ProductDetails from '../ProductDetails/ProductDetails';
 import AttributeList from '../AttributeList/AttributeList';
-import ActionButtons from '../ActionButtons/ActionButtons';
+import ActionButtons from '../../../old/ActionButtons/ActionButtons';
 
 function ControlPage() {
   interface Product {

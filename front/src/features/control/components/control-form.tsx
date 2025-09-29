@@ -43,7 +43,7 @@ const ControlForm = () => {
       }
     };
     fetchParentTypes();
-  }, [selectedBrand, setParentType]);
+  }, [selectedBrand, setParentType, setAllProducts]);
 
   const onSubmit = async (data: Form) => {
     try {

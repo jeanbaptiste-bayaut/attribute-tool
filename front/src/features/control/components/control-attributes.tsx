@@ -32,35 +32,37 @@ const Attributes = () => {
 
   return (
     <div className="control-attributes">
-      {isLoading ? (
+      <h3>Product Attributes</h3>
+      {products.length === 0 ? (
+        <div className="no-products">
+          <p>Please select a parent type to view attributes</p>
+        </div>
+      ) : isLoading ? (
         <div>Loading attributes...</div>
       ) : (
-        <>
-          <h3>Product Attributes</h3>
-          <ul>
-            {attributes.map((attribute, idx) => (
-              <li key={idx} className="attribute-list-container">
-                <div className="attribute-info">
-                  <span>
-                    {attribute.attribute_name} {' : '}
-                    {attribute.value_name}
-                  </span>
-                </div>
-                <label className="switch">
-                  <input
-                    type="checkbox"
-                    id={`switch-${idx}`}
-                    name={`${attribute.attribute_name}:${attribute.value_name}`}
-                    value={`${attribute.attribute_name}:${attribute.value_name}`}
-                    checked={attribute.status}
-                    onChange={() => handleOnChange(idx)}
-                  />
-                  <span className="slider"></span>
-                </label>
-              </li>
-            ))}
-          </ul>
-        </>
+        <ul>
+          {attributes.map((attribute, idx) => (
+            <li key={idx} className="attribute-list-container">
+              <div className="attribute-info">
+                <span>
+                  {attribute.attribute_name} {' : '}
+                  {attribute.value_name}
+                </span>
+              </div>
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  id={`switch-${idx}`}
+                  name={`${attribute.attribute_name}:${attribute.value_name}`}
+                  value={`${attribute.attribute_name}:${attribute.value_name}`}
+                  checked={attribute.status}
+                  onChange={() => handleOnChange(idx)}
+                />
+                <span className="slider"></span>
+              </label>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

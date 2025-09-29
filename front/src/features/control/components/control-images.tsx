@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import useImages from '../stores/useImages';
 import useProducts from '../stores/useProducts';
 import { getImages } from '../api/get-images';
+import { Image } from 'primereact/image';
 
 const Images = () => {
   const { images, setAllImages } = useImages();
@@ -27,13 +28,24 @@ const Images = () => {
     <div className="control-images">
       <h3>Product Images</h3>
 
-      {images.length >= 1 ? (
+      {products.length === 0 ? (
+        <div className="no-products">
+          <p>Please select a parent type to view images</p>
+        </div>
+      ) : images.length >= 1 ? (
         <>
           {/* Image principale */}
-          <img
+          {/* <img
             src={images[imageIndex]?.url}
             alt="product"
             className="main-image"
+          /> */}
+          <Image
+            src={images[imageIndex]?.url}
+            alt="product"
+            preview
+            className="image-container"
+            width="300"
           />
 
           {/* Navigation */}
@@ -58,9 +70,13 @@ const Images = () => {
           {/* Miniatures */}
           {images.length > 1 && (
             <div className="miniatures">
-              {images.slice(1).map((image, idx) => (
+              {images.slice(1, 8).map((image, idx) => (
                 <div className="image-item" key={idx}>
-                  <img src={image.url} alt={`product ${idx + 2}`} />
+                  <img
+                    src={image.url}
+                    alt={`product ${idx + 2}`}
+                    onClick={() => setImageIndex(idx + 1)}
+                  />
                 </div>
               ))}
             </div>

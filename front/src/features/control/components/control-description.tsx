@@ -22,23 +22,35 @@ const Description = () => {
   return (
     <div className="control-description">
       <h3>Product Description</h3>
-      {description ? (
-        <>
+      {products.length === 0 ? (
+        <div className="no-products">
+          <p>Please select a parent type to view description</p>
+        </div>
+      ) : description ? (
+        <div>
           {description.product_description &&
           description.product_description.trim() !== '' ? (
-            <p className="desc-main">{description.product_description}</p>
+            <div
+              className="desc-main"
+              dangerouslySetInnerHTML={{
+                __html: description.product_description,
+              }}
+            />
           ) : null}
           {description.product_characteristic &&
           description.product_characteristic.trim() !== '' ? (
-            <p className="desc-characteristic">
-              {description.product_characteristic}
-            </p>
+            <div
+              className="desc-characteristic"
+              dangerouslySetInnerHTML={{
+                __html: description.product_characteristic,
+              }}
+            />
           ) : null}
           {!description.product_description &&
             !description.product_characteristic && (
               <p>No description available</p>
             )}
-        </>
+        </div>
       ) : (
         <p>No description</p>
       )}

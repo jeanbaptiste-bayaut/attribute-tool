@@ -6,7 +6,7 @@
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 80px 1fr 60px;
+  grid-template-rows: 60px 1fr 60px;
   grid-gap: 10px;
   padding: 20px;
   box-sizing: border-box;
@@ -32,7 +32,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
 }
 
 .control-description {
@@ -40,7 +39,7 @@
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  padding: 30px;
+  padding: 20px;
 }
 
 .control-attributes {
@@ -63,7 +62,7 @@
 .control-form {
   select,
   input {
-    padding: 12px 16px;
+    padding: 6px 16px;
     border-radius: 10px;
     border: 2px solid #e1e5e9;
     background: #f8f9fa;
@@ -90,7 +89,7 @@
     color: #fff;
     border: none;
     border-radius: 10px;
-    padding: 12px 24px;
+    padding: 8px 24px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -110,11 +109,30 @@
 
 // Attributs avec switches
 .control-attributes {
+  min-width: 33%;
+
   h3 {
     margin: 0 0 20px 0;
     font-size: 18px;
     font-weight: 600;
     color: #2d3748;
+  }
+
+  .no-products {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 2px dashed #cbd5e0;
+
+    p {
+      color: #718096;
+      font-size: 16px;
+      text-align: center;
+      margin: 0;
+    }
   }
 
   ul {
@@ -134,7 +152,7 @@
     justify-content: space-between;
     background: #f8f9fa;
     border-radius: 12px;
-    padding: 2px 4px;
+    padding: 8px 12px;
     border: 2px solid transparent;
     transition: all 0.3s ease;
 
@@ -143,19 +161,32 @@
       border-color: #90caf9;
     }
 
-    span {
-      font-size: 14px;
-      font-weight: 500;
-      color: #2d3748;
+    .attribute-info {
+      text-align: left;
+      gap: 2px;
+      flex: 1;
+      max-width: calc(100% - 70px); // Réserve l'espace pour le switch
 
-      &:first-child {
-        font-weight: 600;
-        color: #1a202c;
+      span {
+        font-size: 14px;
+        font-weight: 500;
+        color: #2d3748;
+        word-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto;
+        line-height: 1.3;
+        max-width: 100%;
+
+        &:first-child {
+          font-weight: 600;
+          color: #1a202c;
+        }
       }
     }
 
     .switch {
       margin-left: 15px;
+      flex-shrink: 0; // Empêche le switch de rétrécir
     }
   }
 }
@@ -238,6 +269,23 @@
     color: #2d3748;
   }
 
+  .no-products {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 2px dashed #cbd5e0;
+
+    p {
+      color: #718096;
+      font-size: 16px;
+      text-align: center;
+      margin: 0;
+    }
+  }
+
   .desc-main {
     font-size: 16px;
     line-height: 1.6;
@@ -247,9 +295,12 @@
   }
 
   .desc-characteristic {
+    width: auto;
     font-size: 14px;
     line-height: 1.5;
     color: #718096;
+    text-align: left;
+    word-wrap: break-word;
   }
 }
 
@@ -263,18 +314,51 @@
     text-align: center;
   }
 
-  .main-image {
+  .no-products {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 2px dashed #cbd5e0;
     width: 100%;
-    max-width: 280px;
-    height: 300px;
-    object-fit: cover;
+
+    p {
+      color: #718096;
+      font-size: 16px;
+      text-align: center;
+      margin: 0;
+    }
+  }
+
+  .image-container {
     border-radius: 16px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-    margin-bottom: 20px;
-    transition: transform 0.3s ease;
+    height: 300px;
 
-    &:hover {
-      transform: scale(1.02);
+    img {
+      width: 100%;
+      max-width: 280px;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+      margin-bottom: 20px;
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.02);
+      }
+    }
+
+    button {
+      border-radius: 16px;
+
+      &:hover {
+        background: #67686b;
+        opacity: 0.3;
+      }
     }
   }
 
@@ -304,22 +388,29 @@
   }
 }
 
+// zoom image
+.p-component-overlay {
+  width: 100%;
+  background: hsla(0, 0%, 94%, 0.658);
+}
+
 // Navigation images
 .image-navigation {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin: 15px 0;
+  gap: 10px;
 
   button {
     background: #667eea;
     color: #fff;
     border: none;
-    border-radius: 50%;
+    border-radius: 8%;
     width: 40px;
     height: 40px;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 12px;
     font-weight: bold;
     transition: all 0.3s ease;
 
@@ -394,5 +485,57 @@
 
   .control-images .main-image {
     height: 300px;
+  }
+}
+
+// Toast PrimeReact custom styles
+.p-toast {
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  z-index: 9999 !important;
+
+  .p-toast-message {
+    background: #fff !important;
+    border: none !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+    padding: 16px 20px !important;
+    margin-bottom: 12px !important;
+
+    &.p-toast-message-success {
+      border-left: 4px solid #10b981 !important;
+
+      .p-toast-message-icon {
+        color: #10b981 !important;
+        font-size: 20px !important;
+      }
+
+      .p-toast-message-text {
+        .p-toast-summary {
+          color: #065f46 !important;
+          font-weight: 600 !important;
+          font-size: 16px !important;
+          margin-bottom: 4px !important;
+        }
+
+        .p-toast-detail {
+          color: #374151 !important;
+          font-size: 14px !important;
+          line-height: 1.4 !important;
+        }
+      }
+    }
+
+    .p-toast-icon-close {
+      color: #6b7280 !important;
+      font-size: 16px !important;
+
+      &:hover {
+        color: #374151 !important;
+        background: #f3f4f6 !important;
+        border-radius: 6px !important;
+      }
+    }
   }
 }
