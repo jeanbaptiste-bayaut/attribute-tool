@@ -21,6 +21,7 @@ const Description = () => {
   }, [setDescription, index, products]);
   return (
     <div className="control-description">
+      <h3>Product Description</h3>
       {description ? (
         <>
           {description.product_description &&

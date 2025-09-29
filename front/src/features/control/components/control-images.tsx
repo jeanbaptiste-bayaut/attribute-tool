@@ -1,11 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useImages from '../stores/useImages';
 import useProducts from '../stores/useProducts';
 import { getImages } from '../api/get-images';
 
 const Images = () => {
   const { images, setAllImages } = useImages();
-  const { index, products, setAllProducts, setProductIndex } = useProducts();
+  const { index, products, setAllProducts } = useProducts();
+  const [imageIndex, setImageIndex] = useState(0);
 
   useEffect(() => {
     if (products.length === 0) return;
@@ -24,35 +25,52 @@ const Images = () => {
 
   return (
     <div className="control-images">
-      <button
-        onClick={() => setProductIndex(index + 1)}
-        className="arrow-button-next"
-        disabled={index + 1 == products.length || products.length === 0}
-      >
-        {'>'}
-      </button>
+      <h3>Product Images</h3>
+
       {images.length >= 1 ? (
-        images.map((image, idx) => (
-          <div className="image-item" key={idx}>
-            <img
-              src={image.url}
-              alt="product"
-              className={idx === index ? 'visible' : 'hidden'}
-            />
+        <>
+          {/* Image principale */}
+          <img
+            src={images[imageIndex]?.url}
+            alt="product"
+            className="main-image"
+          />
+
+          {/* Navigation */}
+          <div className="image-navigation">
+            <button
+              onClick={() => setImageIndex(imageIndex - 1)}
+              disabled={imageIndex === 0}
+            >
+              {'<'}
+            </button>
+            <span>
+              {imageIndex + 1} / {images.length}
+            </span>
+            <button
+              onClick={() => setImageIndex(imageIndex + 1)}
+              disabled={imageIndex + 1 >= images.length || images.length === 0}
+            >
+              {'>'}
+            </button>
           </div>
-        ))
+
+          {/* Miniatures */}
+          {images.length > 1 && (
+            <div className="miniatures">
+              {images.slice(1).map((image, idx) => (
+                <div className="image-item" key={idx}>
+                  <img src={image.url} alt={`product ${idx + 2}`} />
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       ) : (
         <div className="no-img">
           <p className="no-img-callout">No images found</p>
         </div>
       )}
-      <button
-        onClick={() => setProductIndex(index - 1)}
-        className="arrow-button-prev"
-        disabled={index === 0}
-      >
-        {'<'}
-      </button>
       {/* <div className="option-color"> */}
       {/* {availableColors.length > 3 ? (
         <button onClick={handleSliderLeft} disabled={displayed[0] == 1}>

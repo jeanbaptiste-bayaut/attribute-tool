@@ -31,16 +31,21 @@ const Attributes = () => {
   };
 
   return (
-    <>
+    <div className="control-attributes">
       {isLoading ? (
         <div>Loading attributes...</div>
       ) : (
-        <div className="control-attributes">
+        <>
+          <h3>Product Attributes</h3>
           <ul>
             {attributes.map((attribute, idx) => (
               <li key={idx} className="attribute-list-container">
-                <span>{attribute.attribute_name}</span>
-                <span>{attribute.value_name}</span>
+                <div className="attribute-info">
+                  <span>
+                    {attribute.attribute_name} {' : '}
+                    {attribute.value_name}
+                  </span>
+                </div>
                 <label className="switch">
                   <input
                     type="checkbox"
@@ -55,9 +60,9 @@ const Attributes = () => {
               </li>
             ))}
           </ul>
-        </div>
+        </>
       )}
-    </>
+    </div>
   );
 };
 
