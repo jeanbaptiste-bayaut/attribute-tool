@@ -20,5 +20,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "old/ActionButtons"]
+  "include": ["src", "old/ActionButtons", "old/AttributeList"]
 }
