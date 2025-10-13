@@ -7,10 +7,16 @@ export default class ProductHasAttributeController extends CoreController {
 
   static async updateStatus(req, res) {
     try {
-      const attributeListToEdit = req.body;
+      const { attributes } = req.body;
+
+      attributes.map((attr) => {
+        if (attr.status == true || attr.status == false) {
+          attr.status === false ? (attr.status = 0) : (attr.status = 1);
+        } else return;
+      });
 
       const result = await ProductHasAttributeDataMapper.updateStatus(
-        attributeListToEdit
+        attributes
       );
 
       res.status(200).json(result);

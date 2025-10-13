@@ -2,6 +2,16 @@ export default class CoreDatamapper {
   static tableName = null;
   static client = null;
 
+  static languageMapping = [
+    { code: 'master', locale: 'english' },
+    { code: 'fr', locale: 'french' },
+    { code: 'de', locale: 'german' },
+    { code: 'it', locale: 'italian' },
+    { code: 'es', locale: 'spanish' },
+    { code: 'nl', locale: 'dutch' },
+    { code: 'pt', locale: 'portuguese' },
+  ];
+
   static init(config) {
     this.client = config.client;
   }

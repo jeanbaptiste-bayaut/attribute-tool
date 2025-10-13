@@ -1,23 +1,49 @@
 import './App.scss';
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
+import axios from 'axios';
 import { useAuth } from './context/AuthContext';
+import './styles/components/_control.scss';
+
+// PrimeReact styles
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 
 function App() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const { login } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (username === 'storefront' && password === 'storefront') {
-      Cookies.set('username', username, { expires: 1 });
+    const checkCredentials = await axios.post(
+      `${
+        process.env.NODE_ENV === 'production'
+          ? import.meta.env.VITE_API_URL
+          : import.meta.env.VITE_API_URL_DEV
+      }/api/user/login`,
+      {
+        email,
+        password,
+      }
+    );
+
+    const user = JSON.stringify(checkCredentials.data);
+
+    console.log(user);
+
+    if (checkCredentials.status !== 200) {
+      alert('Invalid credentials');
+      return;
+    } else {
+      Cookies.set('username', user, { expires: 1 });
       setIsAuthenticated(true);
     }
-    login(username);
+    login(user);
   };
 
   const checkAuth = () => {
@@ -30,6 +56,7 @@ function App() {
 
   useEffect(() => {
     checkAuth();
+    console.log(Cookies.get('username'));
   }, []);
 
   return (
@@ -46,10 +73,10 @@ function App() {
         <form className="login-form" onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder="username"
-            value={username}
+            placeholder="email"
+            value={email}
             onChange={(e) => {
-              setUsername(e.target.value);
+              setEmail(e.target.value);
             }}
           ></input>
           <input

@@ -54,128 +54,83 @@ export default class AttributeDataMapper extends CoreDatamapper {
   }
 
   static async uploadAttributesValues(filePath) {
-    try {
-      const results = [];
-      const selectPromises = [];
-      const noExistingAttributes = [];
+    const BATCH_SIZE = 500;
+    const attributeCache = new Map();
+    const valuesToInsert = [];
+    const existingValues = [];
+    const noExistingAttributes = [];
 
+    try {
+      await this.client.query('BEGIN');
+
+      // Lecture et parsing du fichier CSV
       await pipelineAsync(
         fs.createReadStream(filePath),
-        csvParser({ separator: ';' }).on('data', (row) => {
-          const cleanedRow = cleanKeys(row);
-          results.push(cleanedRow);
+        csvParser({ separator: ';' }),
+        async function* (source) {
+          // Récupération des id des attributs
+          for await (const row of source) {
+            const cleanedRow = cleanKeys(row);
+            const attributeName = cleanedRow.attribute;
 
-          selectPromises.push(
-            this.client
-              .query(`SELECT id FROM attribute WHERE name = ?;`, [
-                row.attribute,
-              ])
-              .then((result) => {
-                if (result[0].length > 0) {
-                  const id = result[0][0].id;
-
-                  cleanedRow['attribute_id'] = id;
-                } else {
-                  noExistingAttributes.push(row.attribute);
-                }
-              })
-              .catch((error) => {
-                console.error(
-                  `Les attributs suvants n'existent pas: ${noExistingAttributes}`,
-                  error
-                );
-                throw new Error(
-                  `Les attributs suvants n'existent pas: ${noExistingAttributes}`
-                );
-              })
-          );
-        })
-      );
-
-      await Promise.all(selectPromises);
-
-      const resultFiltered = results.filter((row) => {
-        return !noExistingAttributes.includes(row.attribute);
-      });
-
-      await this.client.query('BEGIN');
-      try {
-        const queryCheckIfExists = `
-        SELECT id FROM value 
-        WHERE name = ?
-          AND attribute_id = ?`;
-
-        const queryInsert = `
-          INSERT INTO value (name, attribute_id) 
-          VALUES (?, ?);`;
-
-        const insertPromises = [];
-        const existingValues = [];
-
-        for (const row of resultFiltered) {
-          for (const key in row) {
-            if (key.startsWith('value') && row[key] !== '') {
-              const [checkIfExists] = await this.client.query(
-                queryCheckIfExists,
-                [row[key], row.attribute_id]
+            // Vérification de l'existence de l'attribut dans le cache
+            let attributeId = attributeCache.get(attributeName);
+            if (attributeId === undefined) {
+              const [result] = await this.client.query(
+                `
+            SELECT id FROM attribute WHERE name = ?;`,
+                [attributeName]
               );
-              if (checkIfExists.length === 0) {
-                console.log(
-                  `Attempting to insert: ${row[key]} with attribute_id: ${row.attribute_id}`
-                );
-                insertPromises.push(
-                  this.client
-                    .query(queryInsert, [row[key], row.attribute_id])
-                    .then((res) => {
-                      if (res.length > 0) {
-                        console.log(
-                          `Successfully inserted: ${row[key]}, assigned ID: ${res[0].id}`
-                        );
-                      } else {
-                        console.warn(
-                          `Insert was skipped for duplicate: ${row[key]} with attribute_id: ${row.attribute_id}`
-                        );
-                      }
-                    })
-                    .catch((error) =>
-                      console.error(`Failed to insert ${row[key]}:`, error)
-                    )
-                );
-              } else {
-                existingValues.push({
-                  attribute: row.attribute,
-                  value: row[key],
-                });
-                console.log(
-                  `Skipped existing: ${row[key]}, attribute_id: ${row.attribute_id}`
-                );
+
+              if (result.length === 0) {
+                noExistingAttributes.push(attributeName);
+                attributeCache.set(attributeName, null);
+                continue;
+              }
+
+              attributeId = result[0].id;
+              attributeCache.set(attributeName, attributeId);
+            }
+
+            if (!attributeId) continue;
+
+            // Préparer les données pour l'insertion
+            for (const key in cleanedRow) {
+              if (key.startsWith('value') && cleanedRow[key] !== '') {
+                valuesToInsert.push([cleanedRow[key], attributeId]);
+
+                if (valuesToInsert.length >= BATCH_SIZE) {
+                  await this.client.query(
+                    `INSERT IGNORE INTO value (name, attribute_id) VALUES ?`,
+                    [valuesToInsert]
+                  );
+                  valuesToInsert.length = 0; // Réinitialiser le tableau
+                }
               }
             }
+            // Yield to conform to async generator requirements
+            yield;
           }
-        }
+        }.bind(this)
+      );
 
-        const insertResults = await Promise.allSettled(insertPromises);
-
-        const successfulInserts = insertResults.filter(
-          (r) => r.status === 'fulfilled'
-        ).length;
-        const failedInserts = insertResults.filter(
-          (r) => r.status === 'rejected'
-        ).length;
-        console.log(`Total attempted inserts: ${insertPromises.length}`);
-        console.log(`Successful inserts: ${successfulInserts}`);
-        console.log(`Failed inserts: ${failedInserts}`);
-
-        await this.client.query('COMMIT');
-        console.log('File uploaded and processed successfully');
-        return { existingValues, noExistingAttributes };
-      } catch (error) {
-        await this.client.query('ROLLBACK');
-        console.error('Transaction error, rolling back:', error);
-        throw error;
+      // Dernier flush si nécessaire
+      if (valuesToInsert.length > 0) {
+        await this.client.query(
+          'INSERT IGNORE INTO value (name, attribute_id) VALUES ?',
+          [valuesToInsert]
+        );
       }
+      await this.client.query('COMMIT');
+      console.log('File uploaded and processed successfully');
+
+      return {
+        existingValues,
+        noExistingAttributes,
+      };
     } catch (error) {
-      console.error('Error processing the file:', error);
+      await this.client.query('ROLLBACK');
+      console.error('Transaction error, rolling back:', error);
       throw error;
     }
   }

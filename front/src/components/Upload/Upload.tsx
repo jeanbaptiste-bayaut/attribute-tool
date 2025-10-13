@@ -153,7 +153,7 @@ function Upload() {
             className="download"
             separator={';'}
           >
-            Downlaod Products template
+            Download Products template
           </CSVLink>
           <label htmlFor="products" className="label-products">
             Upload products
@@ -202,7 +202,7 @@ function Upload() {
             className="download"
             separator={';'}
           >
-            Downlaod Descriptions template
+            Download Descriptions template
           </CSVLink>
         </form>
         <form
@@ -216,7 +216,7 @@ function Upload() {
             className="download"
             separator={';'}
           >
-            Downlaod Attributes template
+            Download Attributes template
           </CSVLink>
           <label htmlFor="attributes" className="label-attributes">
             Upload attributes
@@ -247,7 +247,7 @@ function Upload() {
             className="download"
             separator={';'}
           >
-            Downlaod Values template
+            Download Values template
           </CSVLink>
           <label htmlFor="values" className="label-values">
             Upload values

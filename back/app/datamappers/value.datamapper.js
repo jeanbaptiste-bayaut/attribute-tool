@@ -27,4 +27,37 @@ export default class ValueDataMapper extends CoreDataMapper {
     );
     return result;
   }
+
+  static async findValuesByAttribute(attributeName) {
+    const [result] = await this.client.query(
+      `SELECT * FROM value
+      WHERE attribute_id = (SELECT id FROM attribute WHERE name = ?);`,
+      [attributeName]
+    );
+    return result;
+  }
+
+  static async findParentTypesPerBrand(brand) {
+    const [result] = await this.client.query(
+      `SELECT value.name from value
+        WHERE id IN 
+        (
+            (
+              SELECT value_id FROM product_has_attribute as p
+              WHERE p.attribute_id = 66
+              AND p.product_id IN 
+              (
+                (SELECT product_id FROM product_has_attribute
+                  LEFT JOIN product on product.id = product_has_attribute.product_id 
+                  WHERE product_has_attribute.value_id = (SELECT id from value where name = ?)
+                  AND product.status = 0
+                )
+              )
+            )
+        )
+      ORDER BY value.name ASC;`,
+      [brand]
+    );
+    return result;
+  }
 }

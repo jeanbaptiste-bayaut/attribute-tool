@@ -1,0 +1,70 @@
+/* Styles for Export feature */
+.export-page {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.export-page h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #222;
+}
+
+.export-form {
+  width: 100%;
+  max-width: 720px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.export-form form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.export-form select {
+  flex: 1 1 auto;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.export-form button {
+  padding: 0.5rem 0.9rem;
+  background: #0b5fff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.export-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.export-form .react-csv-link {
+  display: inline-block;
+  margin-top: 0.25rem;
+  color: #0b5fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .export-form form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

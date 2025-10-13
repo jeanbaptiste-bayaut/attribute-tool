@@ -35,11 +35,9 @@ export default class ProductController extends CoreController {
 
       const result = await ProductDataMapper.switchProductStatus(id);
 
-      res
-        .status(200)
-        .json({
-          message: `product ${result.product_style} has been validated`,
-        });
+      res.status(200).json({
+        message: `product ${result.product_style} has been validated`,
+      });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }

@@ -1,11 +1,11 @@
 import { Outlet } from 'react-router-dom';
-import Leftnav from '../components/Leftnav/Leftnav';
+import TopNav from '../components/TopNav/TopNav';
 
 function Root() {
   return (
     <>
       <div className="container">
-        <Leftnav />
+        <TopNav />
         <div className="content">
           <Outlet />
         </div>

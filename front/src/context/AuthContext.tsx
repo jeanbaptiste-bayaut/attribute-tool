@@ -1,11 +1,12 @@
 // AuthContext.tsx
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { AuthContext } from './AuthContext.objects';
 import Cookies from 'js-cookie';
 
 // Définir le type du contexte
 export interface AuthContextType {
   userName: string | null;
-  login: (userName: string) => void;
+  login: (user: string) => void;
   logout: () => void;
 }
 
@@ -13,11 +14,6 @@ interface AuthProviderProps {
   children: React.ReactNode;
   value?: AuthContextType;
 }
-
-// Créer un contexte pour stocker l'état de l'authentification
-export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined
-);
 
 // Créer un composant AuthProvider pour gérer l'état de l'authentification
 export const AuthProvider: React.FC<AuthProviderProps> = ({
@@ -30,23 +26,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   });
 
   // Fonction pour se connecter
-  const login = (userName: string) => {
-    setUserName(userName);
-    localStorage.setItem('userId', userName);
+  const login = (cookie: string) => {
+    const user = JSON.parse(cookie);
+    setUserName(user.email);
+    localStorage.setItem('userId', user.id);
   };
 
   // Fonction pour se déconnecter
   const logout = () => {
     setUserName(null);
     localStorage.removeItem('userName');
+    Cookies.remove('username');
   };
 
   // Vérifier si un token est présent dans le localStorage et le récupérer pour initialiser l'état
   // de l'authentification lors du chargement du composant AuthProvider
   useEffect(() => {
     const storeduserName = Cookies.get('username');
+
     if (storeduserName) {
-      setUserName(storeduserName);
+      setUserName(JSON.parse(storeduserName).email);
     }
   }, []);
 

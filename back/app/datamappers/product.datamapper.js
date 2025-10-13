@@ -6,31 +6,45 @@ export default class ProductDataMapper extends CoreDataMapper {
   static async findAllProducts(brand, season) {
     const [result] = await this.client.query(
       `
-      SELECT product.id as product_id, 
-      product.style as product_style,
-      product.color as product_color, 
-      product.name as product_name, 
-      description.description as product_description,
-      product.image_url as image_url
-      FROM product
-      JOIN description ON product.description_id = description.id
-      JOIN product_has_attribute ON product_has_attribute.product_id = product.id
-      JOIN value ON product_has_attribute.value_id = value.id
+       SELECT 
+        product.id as product_id,
+        product.name as product_name, 
+        product.style as product_style,
+        product.color as product_color, 
+        product.image_url as image_url,
+        english.status as master
+      FROM product_has_attribute
+        JOIN product on product.id = product_has_attribute.product_id
+        LEFT JOIN english on product.id = english.product_id
       WHERE product.status = 'false'
-      AND product.season=?
-      AND value.name=?;`,
+        AND product.season = ?
+        AND product_has_attribute.value_id = (SELECT id FROM value WHERE name = ?);`,
       [season, brand]
     );
+
+    const [parentTypes] = await this.client.query(
+      `
+      SELECT product_has_attribute.product_id as productId, value.name as parentType from product_has_attribute
+        JOIN attribute on attribute.id = product_has_attribute.attribute_id
+        JOIN value on value.id = product_has_attribute.value_id
+      WHERE attribute.name = 'parent_type';
+      `
+    );
+
+    result.map((product) => {
+      product['parent_type'] = parentTypes.find(
+        (parentType) => product.product_id == parentType.productId
+      ).parentType;
+    });
 
     return result;
   }
 
   static async findProductWithAttributeByPk(id) {
     const [result] = await this.client.query(
-      `SELECT product.id as product_id, product.style as product_style, product.name as product_name, description.description as product_description,
-      attribute.name as attribute_name, value.name as value_name, product.image_url as image_url 
+      `SELECT product.id as product_id, product.style as product_style, product.name as product_name,
+      attribute.name as attribute_name, value.name as value_name, product.image_url as image_url, product_has_attribute.status as status
       FROM product
-      JOIN description ON product.description_id = description.id
       JOIN product_has_attribute ON product.id = product_has_attribute.product_id
       JOIN attribute ON product_has_attribute.attribute_id = attribute.id
       JOIN value ON product_has_attribute.value_id = value.id
