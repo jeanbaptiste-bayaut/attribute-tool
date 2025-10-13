@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Product } from '../types/product.schemas';
 
 export const getProducts = async (brand: string, season: string) => {
+  console.log('Fetching products for brand:', brand, 'and season:', season);
   try {
     const result = await axios.get(
       `${

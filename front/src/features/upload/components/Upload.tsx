@@ -1,30 +1,16 @@
-import './Upload.scss';
-import axios from 'axios';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import '../../../styles/components/_upload.scss';
 import { CSVLink } from 'react-csv';
-import Loader from '../Loader/Loader';
-import Modal from './Modal/Modal';
-import MenuBurger from '../MenuBurger/MenuBurger';
+import Loader from '../../../components/Loader/Loader';
+import UploadModal from './UploadModal';
+import { UploadResult, ExistingValue } from '../types';
+import { uploadFile } from '../api/uploadApi';
+import { AxiosError } from 'axios';
 
-interface AxiosError {
-  response?: {
-    data?: {
-      message?: string;
-    };
-  };
-  message: string;
-}
-
-type ModalProps = {
-  existingValues: { attribute: string; value: string }[];
-  attributeNotFoundList: string[];
-  noExistingAttributes: string[];
-};
-
-function Upload() {
+export default function UploadFeature() {
   const [file, setFile] = useState<File | null>(null);
   const [statusUpload, setStatusUpload] = useState(false);
-  const [list, setList] = useState<ModalProps>({
+  const [list, setList] = useState<UploadResult>({
     existingValues: [],
     attributeNotFoundList: [],
     noExistingAttributes: [],
@@ -32,43 +18,27 @@ function Upload() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile); // Met à jour l'état du fichier
-    }
+    if (selectedFile) setFile(selectedFile);
   };
 
   const handleUpload = async (
     e: React.FormEvent<HTMLFormElement>,
     endpoint: string,
-    file: File | null
+    fileParam: File | null
   ) => {
     e.preventDefault();
     setStatusUpload(true);
 
-    if (!file) {
+    if (!fileParam) {
       alert('No file selected');
       return;
     }
 
     const formData = new FormData();
-
-    formData.append(`${endpoint.replace(/\//g, '-')}`, file);
+    formData.append(`${endpoint.replace(/\//g, '-')}`, fileParam);
 
     try {
-      const upload = await axios.post(
-        `${
-          process.env.NODE_ENV === 'production'
-            ? import.meta.env.VITE_API_URL
-            : import.meta.env.VITE_API_URL_DEV
-        }/upload/${endpoint}`,
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
+      const upload = await uploadFile(endpoint, formData);
 
       if (endpoint === 'attributes/values') {
         if (
@@ -80,25 +50,27 @@ function Upload() {
       }
 
       if (endpoint === 'products/attributes/values') {
-        console.log('upload.data', upload.data);
-        if (upload.data.valueNotFoundList.length > 0) {
+        if (upload.data.valueNotFoundList?.length > 0) {
           const notExistingAttributes = upload.data.valueNotFoundList.map(
-            (item: { attribute: string; value: string }) => {
-              return `${item.attribute} : ${item.value}`;
-            }
+            (item: ExistingValue) => `${item.attribute} : ${item.value}`
           );
-          const attributeNotFoundList = upload.data.attributeNotFoundList;
+          const attributeNotFoundList = upload.data.attributeNotFoundList || [];
 
           setList({
             noExistingAttributes: notExistingAttributes,
-            attributeNotFoundList: attributeNotFoundList,
+            attributeNotFoundList,
             existingValues: [],
           });
         }
       }
 
       setStatusUpload(false);
-      alert(`${endpoint} file uploaded successfully`);
+      alert(`${endpoint} file uploaded successfully \n
+        ${
+          upload.missingStyles
+            ? 'Missing styles: ' + upload.missingStyles.join(', ')
+            : ''
+        }`);
       setFile(null);
 
       (
@@ -108,29 +80,33 @@ function Upload() {
       )?.reset();
     } catch (error) {
       const axiosError = error as AxiosError;
-      console.log('axiosError', axiosError);
-      const errorMessage =
-        axiosError.response?.data?.message || axiosError.message;
+      const data = axiosError.response?.data as
+        | { message?: string }
+        | undefined;
+      const errorMessage = data?.message ?? axiosError.message;
       alert(`Error uploading the ${endpoint} file: \n ${errorMessage}`);
+      setStatusUpload(false);
       throw new Error(`Error uploading the ${endpoint} file: ${errorMessage}`);
     }
   };
 
   return (
     <>
-      <MenuBurger />
+      {/* <MenuBurger /> */}
       <h1>Upload data</h1>
       {statusUpload && <Loader />}
       <div className="upload-container">
         {list?.existingValues.length > 0 ||
         (list?.noExistingAttributes.length > 0 && !statusUpload) ? (
-          <Modal
+          <UploadModal
             existingValues={list.existingValues}
             noExistingAttributes={list.noExistingAttributes}
             attributeNotFoundList={list.attributeNotFoundList}
             setList={setList}
           />
         ) : null}
+
+        {/* forms copied from original component - kept structure and ids */}
         <form
           id="products"
           className="products"
@@ -169,24 +145,12 @@ function Upload() {
           />
           <button className="button-products">Upload</button>
         </form>
+
         <form
           id="descriptions"
           className="descriptions"
           onSubmit={(e) => handleUpload(e, 'descriptions', file)}
         >
-          <label htmlFor="descriptions" className="label-descriptions">
-            Upload descriptions
-          </label>
-          <input
-            type="file"
-            className="file-descriptions"
-            id="descriptions-csv"
-            name="descriptions-csv"
-            accept=".csv"
-            required
-            onChange={handleFileChange}
-          />
-          <button className="button-descriptions">Upload</button>
           <CSVLink
             data={[
               ['style', 'color', 'name', 'image_url', 'description'],
@@ -204,7 +168,21 @@ function Upload() {
           >
             Download Descriptions template
           </CSVLink>
+          <label htmlFor="descriptions" className="label-descriptions">
+            Upload descriptions
+          </label>
+          <input
+            type="file"
+            className="file-descriptions"
+            id="descriptions-csv"
+            name="descriptions-csv"
+            accept=".csv"
+            required
+            onChange={handleFileChange}
+          />
+          <button className="button-descriptions">Upload</button>
         </form>
+
         <form
           id="attributes"
           className="attributes"
@@ -232,6 +210,7 @@ function Upload() {
           />
           <button className="button-attributes">Upload</button>
         </form>
+
         <form
           id="attributes-values"
           className="values"
@@ -263,6 +242,7 @@ function Upload() {
           />
           <button className="button-values">Upload</button>
         </form>
+
         <form
           id="products-attributes-values"
           className="products-attributes"
@@ -304,7 +284,7 @@ function Upload() {
             className="download"
             separator={';'}
           >
-            Assign attributes template
+            Download attributes template
           </CSVLink>
           <label
             htmlFor="products-attributes"
@@ -327,5 +307,3 @@ function Upload() {
     </>
   );
 }
-
-export default Upload;

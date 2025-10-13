@@ -17,6 +17,8 @@ export default class UploadProductDataMapper extends CoreDataMapper {
   static async uploadProducts(filePath) {
     const results = [];
 
+    const products = [];
+
     try {
       await this.client.query('BEGIN'); // Commencer une transaction
 
@@ -35,9 +37,13 @@ export default class UploadProductDataMapper extends CoreDataMapper {
           throw new Error(
             'header must include "style", "color", "name", "image_url", "season"'
           );
+        } else {
+          products.push(cleanedRow.pattern);
         }
         results.push(cleanedRow);
       }
+
+      // const filterNonExistingProducts = await isAlreadyExisting(products);
 
       const insertQuery = `
       INSERT INTO product (style, color, name, image_url, season)
@@ -51,7 +57,7 @@ export default class UploadProductDataMapper extends CoreDataMapper {
         );
 
         if (isStyleExists[0]) {
-          throw new Error(`style ${row.style} already exists`);
+          continue;
         }
 
         await this.client.query(insertQuery, [
@@ -62,6 +68,7 @@ export default class UploadProductDataMapper extends CoreDataMapper {
           row.season,
         ]);
       }
+
       await this.client.query('COMMIT'); // Valider la transaction
 
       return { success: 'File uploaded and processed successfully' };

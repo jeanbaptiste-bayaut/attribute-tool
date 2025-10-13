@@ -57,6 +57,7 @@ export default class DescriptionDataMapper extends CoreDataMapper {
         results.push(cleanedRow);
       }
 
+      const missingStyles = [];
       for (const row of results) {
         const [isStyleExists] = await this.client.query(
           `SELECT id FROM product WHERE style=?`,
@@ -64,7 +65,7 @@ export default class DescriptionDataMapper extends CoreDataMapper {
         );
 
         if (!isStyleExists[0]) {
-          throw new Error(`style ${row.ModesCode} does not exist`);
+          missingStyles.push(row.ModesCode);
         }
 
         const { locale } = this.languageMapping.find(
@@ -92,7 +93,10 @@ export default class DescriptionDataMapper extends CoreDataMapper {
 
       await this.client.query('COMMIT'); // Valider la transaction
 
-      return { success: 'File uploaded and processed successfully' };
+      return {
+        success: 'File uploaded and processed successfully',
+        missingStyles,
+      };
     } catch (error) {
       await this.client.query('ROLLBACK'); // Annuler la transaction en cas d'erreur
       throw new Error(error);

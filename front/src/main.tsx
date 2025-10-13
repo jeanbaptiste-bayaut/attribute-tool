@@ -15,7 +15,7 @@ import Root from './pages/Root';
 import App from './App';
 // import ControlPage from './components/ControlPage/ControlPage';
 import Loader from './components/Loader/Loader';
-import Upload from './components/Upload/Upload';
+import Upload from './features/upload/components/Upload';
 import Export from './features/export/components/export';
 import PageNotfound from './pages/404/404';
 import Control from './features/control/components/control';

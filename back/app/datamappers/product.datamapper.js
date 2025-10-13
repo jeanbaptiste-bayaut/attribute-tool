@@ -4,45 +4,29 @@ export default class ProductDataMapper extends CoreDataMapper {
   static tableName = 'product';
 
   static async findAllProducts(brand, season) {
-    // const localeMapped = this.languageMapping.find(
-    //   (lang) => lang.locale === locale
-    // );
-
     const [result] = await this.client.query(
       `
        SELECT 
-	    product.id as product_id,
-	    product.name as product_name, 
-      product.style as product_style,
-      product.color as product_color, 
-      product.image_url as image_url,
-      english.status as master, 
-      french.status as fr, 
-      spanish.status as es, 
-      dutch.status as nl, 
-      portuguese.status as pt, 
-      german.status as de, 
-      italian.status as it
-FROM product_has_attribute
-  JOIN product on product.id = product_has_attribute.product_id
-  LEFT JOIN english on product.id = english.product_id
-  LEFT JOIN french on  product.id = french.product_id
-  LEFT JOIN spanish on product.id = spanish.product_id
-  LEFT JOIN dutch on product.id = dutch.product_id
-  LEFT JOIN portuguese on product.id = portuguese.product_id
-  LEFT JOIN german on product.id = german.product_id
-  LEFT JOIN italian on product.id = italian.product_id
-WHERE product.status = 'false'
-  AND product.season = ?
-  AND product_has_attribute.value_id = (SELECT id FROM value WHERE name = ?);`,
+        product.id as product_id,
+        product.name as product_name, 
+        product.style as product_style,
+        product.color as product_color, 
+        product.image_url as image_url,
+        english.status as master
+      FROM product_has_attribute
+        JOIN product on product.id = product_has_attribute.product_id
+        LEFT JOIN english on product.id = english.product_id
+      WHERE product.status = 'false'
+        AND product.season = ?
+        AND product_has_attribute.value_id = (SELECT id FROM value WHERE name = ?);`,
       [season, brand]
     );
 
     const [parentTypes] = await this.client.query(
       `
       SELECT product_has_attribute.product_id as productId, value.name as parentType from product_has_attribute
-      JOIN attribute on attribute.id = product_has_attribute.attribute_id
-      JOIN value on value.id = product_has_attribute.value_id
+        JOIN attribute on attribute.id = product_has_attribute.attribute_id
+        JOIN value on value.id = product_has_attribute.value_id
       WHERE attribute.name = 'parent_type';
       `
     );
