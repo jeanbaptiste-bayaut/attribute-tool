@@ -4,19 +4,12 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 const __dirname = path.resolve();
 dotenv.config({ path: path.join(__dirname, '../.env') });
+const caPath = path.join(__dirname, '../certs/ca.pem');
 
-// import pg from 'pg';
-// const { Pool } = pg;
-
-// const PG_PORT = process.env.ENV === 'dev' ? 5433 : 5432;
-
-// const client = new Pool({
-//   user: process.env.PG_USER,
-//   host: process.env.PG_HOST,
-//   database: process.env.PG_DATABASE,
-//   password: process.env.PG_PASSWORD,
-//   port: PG_PORT,
-// });
+if (!fs.existsSync(caPath)) {
+  console.error(`❌ Certificat introuvable : ${caPath}`);
+  process.exit(1);
+}
 
 const client = mysql.createPool({
   host: process.env.DB_HOST,
@@ -25,7 +18,7 @@ const client = mysql.createPool({
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
   ssl: {
-    ca: fs.readFileSync('../../../certs/ca.pem'),
+    ca: fs.readFileSync(caPath),
   },
 });
 
