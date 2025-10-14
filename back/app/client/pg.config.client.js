@@ -25,7 +25,7 @@ const client = mysql.createPool({
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
   ssl: {
-    ca: fs.readFileSync('ca.pem'),
+    ca: fs.readFileSync('../../../certs/ca.pem'),
   },
 });
 
