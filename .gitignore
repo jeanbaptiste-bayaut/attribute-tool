@@ -128,5 +128,8 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 
-back/
-front/
+# uploads files
+uploads
+
+# TODO
+TODO.md

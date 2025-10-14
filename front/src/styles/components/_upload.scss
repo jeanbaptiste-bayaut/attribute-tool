@@ -1,0 +1,255 @@
+.upload-content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+// Styles for the Upload page and forms
+.upload-page {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.upload-page h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: #222;
+}
+
+.upload-container {
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+  align-items: start;
+  justify-items: center;
+}
+
+/* Individual form card */
+.upload-container form {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+}
+
+.upload-container .download {
+  font-size: 0.875rem;
+  color: #0b5fff;
+  text-decoration: none;
+  margin-bottom: 0.25rem;
+}
+
+.upload-container label {
+  font-weight: 600;
+  color: #333;
+}
+
+.upload-container input[type="file"] {
+  border: 1px dashed #dcdcdc;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background: #fafafa;
+}
+
+.upload-container button {
+  background: #0b5fff;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.upload-container button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Specific small helpers for form classes used in component */
+.upload-container .products,
+.upload-container .descriptions,
+.upload-container .attributes,
+.upload-container .values,
+.upload-container .products-attributes {
+  min-height: 120px;
+}
+
+/* Upload Modal styles */
+.list-container {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  padding: 2rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.list-container ul {
+  position: relative;
+  background-color: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  list-style: none;
+  margin: 0;
+}
+
+.list-container h4 {
+  margin: 0 0 0.75rem 0;
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+}
+
+.list-container li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f5f5f5;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.list-container li:last-child {
+  border-bottom: none;
+}
+
+.list-container button {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 28px;
+  height: 28px;
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  z-index: 10;
+}
+
+.list-container button:hover {
+  background: #ff3742;
+}
+
+.list-container button:active {
+  transform: scale(0.95);
+}
+
+/* Scrollbar styling for modal lists */
+.list-container ul::-webkit-scrollbar {
+  width: 6px;
+}
+
+.list-container ul::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.list-container ul::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.list-container ul::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* CSV Structure Table styles */
+.csv-structure-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+  font-size: 0.7rem;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  table-layout: fixed;
+}
+
+.csv-structure-table th {
+  background: #f8f9fa;
+  color: #333;
+  font-weight: 600;
+  padding: 0.3rem 0.2rem;
+  text-align: left;
+  border-bottom: 2px solid #e9ecef;
+  font-size: 0.65rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.csv-structure-table td {
+  padding: 0.3rem 0.2rem;
+  border-bottom: 1px solid #e9ecef;
+  color: #555;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.65rem;
+}
+
+.csv-structure-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.csv-structure-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+@media (max-width: 640px) {
+  .upload-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .list-container {
+    padding: 1rem;
+    gap: 0.5rem;
+  }
+  
+  .list-container ul {
+    max-width: 100%;
+    max-height: 400px;
+  }
+  
+  .csv-structure-table {
+    font-size: 0.75rem;
+  }
+  
+  .csv-structure-table th,
+  .csv-structure-table td {
+    padding: 0.4rem 0.3rem;
+    max-width: 80px;
+  }
+}
