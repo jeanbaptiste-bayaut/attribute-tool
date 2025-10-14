@@ -1,6 +1,7 @@
 import mysql from 'mysql2/promise';
 import path from 'path';
 import dotenv from 'dotenv';
+import fs from 'fs';
 const __dirname = path.resolve();
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
@@ -23,7 +24,9 @@ const client = mysql.createPool({
   password: process.env.DB_PWD,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
-  ssl: { rejectUnauthorized: true },
+  ssl: {
+    ca: fs.readFileSync('ca.pem'),
+  },
 });
 
 async function getConnection() {
