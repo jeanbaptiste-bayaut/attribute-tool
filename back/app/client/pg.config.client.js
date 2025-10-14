@@ -20,8 +20,9 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 const client = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
-  //password: process.env.DB_PWD,
+  password: process.env.DB_PWD,
   database: process.env.DB_NAME,
+  port: process.env.DB_PORT ? process.env.DB_PORT : 3306,
 });
 
 async function getConnection() {
