@@ -66,6 +66,7 @@ export default class DescriptionDataMapper extends CoreDataMapper {
 
         if (!isStyleExists[0]) {
           missingStyles.push(row.ModesCode);
+          continue;
         }
 
         const { locale } = this.languageMapping.find(

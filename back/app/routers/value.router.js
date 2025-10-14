@@ -13,7 +13,7 @@ router.get(
   ValueController.getValuesByAttribute.bind(ValueController)
 );
 router.get(
-  '/api/values/parent-type/:brand',
+  '/api/values/parent-type/:brand/:season',
   ValueController.findParentTypesPerBrand.bind(ValueController)
 );
 router.get('/api/brands', ValueController.getBrandSList.bind(ValueController));

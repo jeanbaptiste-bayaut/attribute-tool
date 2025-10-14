@@ -10,6 +10,7 @@ import { Form } from '../types/product.schemas';
 import useProducts from '../stores/useProducts';
 import { useForm } from 'react-hook-form';
 import { filterProductList } from '../services/filterProductList';
+import useImages from '../stores/useImages';
 
 const ControlForm = () => {
   const { seasons, setAllSeasons } = useSeasons();
@@ -17,6 +18,7 @@ const ControlForm = () => {
   const { parent_type, setParentType } = useAttributes();
   const { setAllProducts } = useProducts();
   const [isLoading, setIsLoading] = useState(true);
+  const { setIndexImage } = useImages();
 
   const { register, handleSubmit, watch } = useForm<Form>({
     mode: 'onChange',
@@ -28,12 +30,16 @@ const ControlForm = () => {
   });
 
   const selectedBrand = watch('brand_name');
+  const selectedSeason = parseInt(watch('season_name'));
 
   useEffect(() => {
     const fetchParentTypes = async () => {
-      if (selectedBrand) {
+      if (selectedBrand && selectedSeason) {
         try {
-          const types = await getParentTypes(selectedBrand);
+          const types = await getParentTypes(selectedBrand, selectedSeason);
+
+          console.log(types);
+
           setParentType(types);
         } catch (error) {
           console.error('Error fetching parent types:', error);
@@ -43,9 +49,10 @@ const ControlForm = () => {
       }
     };
     fetchParentTypes();
-  }, [selectedBrand, setParentType, setAllProducts]);
+  }, [selectedBrand, selectedSeason, setParentType, setAllProducts]);
 
   const onSubmit = async (data: Form) => {
+    setIndexImage(0);
     try {
       const fetchedProducts = await getProducts(
         data.brand_name,

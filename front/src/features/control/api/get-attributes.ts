@@ -32,8 +32,6 @@ export const getAttributesListById = async (productId: number) => {
       }/api/attributes/${productId}`
     );
 
-    console.log('Attributes list fetched for product', productId, result.data);
-
     return result.data;
   } catch (error) {
     console.error('Error fetching attributes list:', error);

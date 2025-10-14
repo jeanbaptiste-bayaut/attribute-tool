@@ -40,6 +40,8 @@ export default function UploadFeature() {
     try {
       const upload = await uploadFile(endpoint, formData);
 
+      console.log(upload);
+
       if (endpoint === 'attributes/values') {
         if (
           upload.data.existinValues?.length > 0 ||
@@ -50,11 +52,11 @@ export default function UploadFeature() {
       }
 
       if (endpoint === 'products/attributes/values') {
-        if (upload.data.valueNotFoundList?.length > 0) {
-          const notExistingAttributes = upload.data.valueNotFoundList.map(
+        if (upload.valueNotFoundList?.length > 0) {
+          const notExistingAttributes = upload.valueNotFoundList.map(
             (item: ExistingValue) => `${item.attribute} : ${item.value}`
           );
-          const attributeNotFoundList = upload.data.attributeNotFoundList || [];
+          const attributeNotFoundList = upload.attributeNotFoundList || [];
 
           setList({
             noExistingAttributes: notExistingAttributes,
@@ -91,7 +93,7 @@ export default function UploadFeature() {
   };
 
   return (
-    <>
+    <div className="upload-content-container">
       {/* <MenuBurger /> */}
       <h1>Upload data</h1>
       {statusUpload && <Loader />}
@@ -115,13 +117,12 @@ export default function UploadFeature() {
         >
           <CSVLink
             data={[
-              ['style', 'color', 'name', 'image_url', 'description', 'season'],
+              ['style', 'color', 'name', 'image_url', 'season'],
               [
                 'ELBSF00180',
                 'bllk',
                 'SBXE PREVENT PO Y',
                 'https://s3.amazonaws.com/images.boardriders.com/bi/element/large/elbsf00180_ghe0.png',
-                'description',
                 '251',
               ],
             ]}
@@ -153,13 +154,24 @@ export default function UploadFeature() {
         >
           <CSVLink
             data={[
-              ['style', 'color', 'name', 'image_url', 'description'],
+              [
+                'ModesCode',
+                'LabelWeb',
+                'ActiveLanguage',
+                'DescriptionLOng',
+                'Characteristics',
+                'composition',
+                'type',
+              ],
+
               [
                 'ELBSF00180',
-                'blk',
-                'SBXE PREVENT PO Y',
-                'https://s3.amazonaws.com/images.boardriders.com/bi/element/large/elbsf00180_ghe0.png',
-                'description',
+                'HIGHLINE32CZ (BFG)',
+                'master',
+                "The Highline 32L CZ is a versatile backpack designed for everyday use and outdoor adventures. With its spacious main compartment, multiple pockets, and comfortable straps, it offers ample storage and easy organization for all your essentials. Whether you're heading to work, school, or a weekend hike, this backpack is built to keep up with your active lifestyle.",
+                '__Collection:__ HIGHLINE PRO IMPACT',
+                '93.2% Recycled Nylon, 6.8% Spandex',
+                'Chest Zip Wetsuit',
               ],
             ]}
             filename={`import-descriptions-template.csv`}
@@ -171,6 +183,33 @@ export default function UploadFeature() {
           <label htmlFor="descriptions" className="label-descriptions">
             Upload descriptions
           </label>
+          {/* <table
+            className="csv-structure-table"
+            style={{ transform: 'scale(0.8)' }}
+          >
+            <thead>
+              <tr>
+                <th>ModesCode</th>
+                <th>LabelWeb</th>
+                <th>ActiveLanguage</th>
+                <th>DescriptionLong</th>
+                <th>Characteristics</th>
+                <th>Composition</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ELBSF00180</td>
+                <td>HIGHLINE32CZ (BFG)</td>
+                <td>master</td>
+                <td>The Highline 32L CZ is a versatile backpack...</td>
+                <td>__Collection:__ HIGHLINE PRO IMPACT</td>
+                <td>93.2% Recycled Nylon, 6.8% Spandex</td>
+                <td>Chest Zip Wetsuit</td>
+              </tr>
+            </tbody>
+          </table> */}
           <input
             type="file"
             className="file-descriptions"
@@ -304,6 +343,6 @@ export default function UploadFeature() {
           <button className="button-products-attributes">Upload</button>
         </form>
       </div>
-    </>
+    </div>
   );
 }

@@ -12,7 +12,7 @@ export default class ProductDataMapper extends CoreDataMapper {
         product.style as product_style,
         product.color as product_color, 
         product.image_url as image_url,
-        english.status as master
+        english.locale as master
       FROM product_has_attribute
         JOIN product on product.id = product_has_attribute.product_id
         LEFT JOIN english on product.id = english.product_id

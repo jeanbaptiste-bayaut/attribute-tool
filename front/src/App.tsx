@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 import { useAuth } from './context/AuthContext';
 import './styles/components/_control.scss';
+import './styles/components/_login.scss';
 
 // PrimeReact styles
 import 'primereact/resources/themes/saga-blue/theme.css';
@@ -34,8 +35,6 @@ function App() {
 
     const user = JSON.stringify(checkCredentials.data);
 
-    console.log(user);
-
     if (checkCredentials.status !== 200) {
       alert('Invalid credentials');
       return;
@@ -56,11 +55,10 @@ function App() {
 
   useEffect(() => {
     checkAuth();
-    console.log(Cookies.get('username'));
   }, []);
 
   return (
-    <>
+    <div className="app-container">
       <h1> Attribute Control Tool </h1>
       {isAuthenticated && (
         <div className="redirection-section">
@@ -90,7 +88,7 @@ function App() {
           <button type="submit">Login</button>
         </form>
       )}
-    </>
+    </div>
   );
 }
 

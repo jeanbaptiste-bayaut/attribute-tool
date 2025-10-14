@@ -13,12 +13,13 @@ const ControlButtons = () => {
   const { index, products, setProductIndex, setAllProducts } = useProducts();
   const { attributes, resetAttributes, setParentType, parent_type } =
     useAttributes();
-  const { setAllImages } = useImages();
+  const { setAllImages, setIndexImage } = useImages();
   const { setDescription } = useDescription();
 
   const toast = useRef<Toast>(null);
 
   const submitChanges = () => {
+    setIndexImage(0);
     const product = products[index];
 
     if (index + 1 < products.length) {
@@ -31,10 +32,10 @@ const ControlButtons = () => {
       patchProductStatus(product);
 
       // Réinitialiser tous les composants
+      setAllImages([]);
       setAllProducts([]);
       setProductIndex(0);
       resetAttributes();
-      setAllImages([]);
       setDescription(null);
       setParentType(
         parent_type.filter((type) => type.name !== product.parent_type)
@@ -60,14 +61,20 @@ const ControlButtons = () => {
       </button>
       <button
         className="secondary-btn"
-        onClick={() => setProductIndex(index - 1)}
+        onClick={() => {
+          setProductIndex(index - 1);
+          setIndexImage(0);
+        }}
         disabled={index === 0}
       >
         Previous
       </button>
       <button
         className="secondary-btn"
-        onClick={() => setProductIndex(index + 1)}
+        onClick={() => {
+          setProductIndex(index + 1);
+          setIndexImage(0);
+        }}
         disabled={index + 1 >= products.length || products.length === 0}
       >
         Next

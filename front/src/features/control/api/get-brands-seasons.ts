@@ -45,14 +45,15 @@ export const getSeasons = async () => {
   }
 };
 
-export const getParentTypes = async (brand: string) => {
+export const getParentTypes = async (brand: string, season: number) => {
+  
   try {
     const result = await axios.get(
       `${
         process.env.NODE_ENV === 'production'
           ? import.meta.env.VITE_API_URL
           : import.meta.env.VITE_API_URL_DEV
-      }/api/values/parent-type/${brand}`,
+      }/api/values/parent-type/${brand}/${season}`,
       {
         withCredentials: true,
         headers: {

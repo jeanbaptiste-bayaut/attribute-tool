@@ -1,20 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import useImages from '../stores/useImages';
 import useProducts from '../stores/useProducts';
 import { getImages } from '../api/get-images';
 import { Image } from 'primereact/image';
 
 const Images = () => {
-  const { images, setAllImages } = useImages();
+  const { images, setAllImages, indexImage, setIndexImage } = useImages();
   const { index, products, setAllProducts } = useProducts();
-  const [imageIndex, setImageIndex] = useState(0);
 
   useEffect(() => {
     if (products.length === 0) return;
     getImages({
-      style: products[index].product_style,
-      brand: products[index].brand_name,
-      color: products[index].product_color,
+      style: products[index].product_style.toLowerCase(),
+      brand: products[index].brand_name.toLowerCase(),
+      color: products[index].product_color.toLowerCase(),
     })
       .then((fetchedImages) => {
         setAllImages(fetchedImages);
@@ -34,14 +33,8 @@ const Images = () => {
         </div>
       ) : images.length >= 1 ? (
         <>
-          {/* Image principale */}
-          {/* <img
-            src={images[imageIndex]?.url}
-            alt="product"
-            className="main-image"
-          /> */}
           <Image
-            src={images[imageIndex]?.url}
+            src={images[indexImage]?.url}
             alt="product"
             preview
             className="image-container"
@@ -51,17 +44,17 @@ const Images = () => {
           {/* Navigation */}
           <div className="image-navigation">
             <button
-              onClick={() => setImageIndex(imageIndex - 1)}
-              disabled={imageIndex === 0}
+              onClick={() => setIndexImage(indexImage - 1)}
+              disabled={indexImage === 0}
             >
               {'<'}
             </button>
             <span>
-              {imageIndex + 1} / {images.length}
+              {indexImage + 1} / {images.length}
             </span>
             <button
-              onClick={() => setImageIndex(imageIndex + 1)}
-              disabled={imageIndex + 1 >= images.length || images.length === 0}
+              onClick={() => setIndexImage(indexImage + 1)}
+              disabled={indexImage + 1 >= images.length || images.length === 0}
             >
               {'>'}
             </button>
@@ -75,7 +68,7 @@ const Images = () => {
                   <img
                     src={image.url}
                     alt={`product ${idx + 2}`}
-                    onClick={() => setImageIndex(idx + 1)}
+                    onClick={() => setIndexImage(idx + 1)}
                   />
                 </div>
               ))}
@@ -87,46 +80,6 @@ const Images = () => {
           <p className="no-img-callout">No images found</p>
         </div>
       )}
-      {/* <div className="option-color"> */}
-      {/* {availableColors.length > 3 ? (
-        <button onClick={handleSliderLeft} disabled={displayed[0] == 1}>
-          {'<'}
-        </button>
-      ) : null}
-      {availableColors.map((elt, index) => {
-        if (displayed.includes(index + 1))
-          return (
-            <button
-              key={index}
-              className={`color-button`}
-              onClick={() => {
-                setProductIndex(0);
-                getImages({
-                  style: style,
-                  brand,
-                  color: elt.color,
-                });
-              }}
-            >
-              <figure key={index}>
-                <img
-                  src={`https://images.napali.app/_/${brand}/hires/${style}_${elt.color}.jpg`}
-                  alt="vignette"
-                />
-                <figcaption>{elt.color}</figcaption>
-              </figure>
-            </button>
-          );
-      })}
-      {availableColors.length > 3 ? (
-        <button
-          onClick={handleSliderRight}
-          disabled={displayed[displayed.length - 1] >= availableColors.length}
-        >
-          {'>'}
-        </button>
-      ) : null} */}
-      {/* </div> */}
     </div>
   );
 };

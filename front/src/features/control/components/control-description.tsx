@@ -21,13 +21,17 @@ const Description = () => {
   }, [setDescription, index, products]);
   return (
     <div className="control-description">
-      <h3>Product Description</h3>
+      <h3>Product Info</h3>
       {products.length === 0 ? (
         <div className="no-products">
           <p>Please select a parent type to view description</p>
         </div>
       ) : description ? (
         <div>
+          <p className="desc-main">Label : {description.label}</p>
+          <p className="desc-characteristic">
+            Product type : {description.product_type}
+          </p>
           {description.product_description &&
           description.product_description.trim() !== '' ? (
             <div

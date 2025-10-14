@@ -37,7 +37,7 @@ export default class ValueDataMapper extends CoreDataMapper {
     return result;
   }
 
-  static async findParentTypesPerBrand(brand) {
+  static async findParentTypesPerBrand(brand, season) {
     const [result] = await this.client.query(
       `SELECT value.name from value
         WHERE id IN 
@@ -51,12 +51,13 @@ export default class ValueDataMapper extends CoreDataMapper {
                   LEFT JOIN product on product.id = product_has_attribute.product_id 
                   WHERE product_has_attribute.value_id = (SELECT id from value where name = ?)
                   AND product.status = 0
+                  AND product.season = ?
                 )
               )
             )
         )
       ORDER BY value.name ASC;`,
-      [brand]
+      [brand, season]
     );
     return result;
   }
