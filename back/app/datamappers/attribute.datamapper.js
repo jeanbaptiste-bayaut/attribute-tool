@@ -57,7 +57,6 @@ export default class AttributeDataMapper extends CoreDatamapper {
     const BATCH_SIZE = 500;
     const attributeCache = new Map();
     const valuesToInsert = [];
-    const existingValues = [];
     const noExistingAttributes = [];
 
     try {
@@ -125,7 +124,6 @@ export default class AttributeDataMapper extends CoreDatamapper {
       console.log('File uploaded and processed successfully');
 
       return {
-        existingValues,
         noExistingAttributes,
       };
     } catch (error) {

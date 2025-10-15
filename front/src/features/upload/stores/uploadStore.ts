@@ -1,12 +1,25 @@
-import { useState } from 'react';
-import { UploadListState, SetUploadList } from '../types';
+import { UploadListState } from '../types/upload.schemas';
+import { create } from 'zustand';
 
-export function useUploadList(): [UploadListState, SetUploadList] {
-  const [list, setList] = useState<UploadListState>({
-    existingValues: [],
+type UploadStore = {
+  list: UploadListState;
+  setList: (list: UploadListState) => void;
+  resetList: () => void;
+};
+
+const useUpload = create<UploadStore>((set) => ({
+  list: {
     noExistingAttributes: [],
     attributeNotFoundList: [],
-  });
+  },
+  setList: (list: UploadListState) => set({ list }),
+  resetList: () =>
+    set({
+      list: {
+        noExistingAttributes: [],
+        attributeNotFoundList: [],
+      },
+    }),
+}));
 
-  return [list, setList];
-}
+export default useUpload;

@@ -1,4 +1,4 @@
-import { SetUploadList } from '../types';
+import { SetUploadList } from '../types/upload.schemas';
 
 export function clearList(setList: SetUploadList) {
   setList({

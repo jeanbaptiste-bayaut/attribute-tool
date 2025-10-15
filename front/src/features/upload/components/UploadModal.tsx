@@ -1,44 +1,23 @@
-import { ExistingValue, UploadListState, SetUploadList } from '../types';
+import { useEffect } from 'react';
 import { clearList } from '../services/uploadService';
+import useUpload from '../stores/uploadStore';
 
-interface UploadModalProps extends UploadListState {
-  setList: SetUploadList;
-}
+export default function UploadModal() {
+  const { list, setList } = useUpload();
 
-export default function UploadModal({
-  existingValues,
-  noExistingAttributes,
-  attributeNotFoundList,
-  setList,
-}: UploadModalProps) {
+  useEffect(() => {
+    {
+      console.log('list in modal', list);
+    }
+  }, [list]);
   return (
     <div className="list-container">
-      {attributeNotFoundList.length > 0 && (
+      {list.noExistingAttributes.length > 0 && (
         <ul>
           <button onClick={() => clearList(setList)}>x</button>
           <h4>Attributes not existing :</h4>
-          {attributeNotFoundList.map((item, index) => (
+          {list.noExistingAttributes.map((item, index) => (
             <li key={index}>{item}</li>
-          ))}
-        </ul>
-      )}
-      {noExistingAttributes.length > 0 && (
-        <ul>
-          <button onClick={() => clearList(setList)}>x</button>
-          <h4>Values not existing :</h4>
-          {noExistingAttributes.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
-      )}
-      {existingValues.length > 0 && (
-        <ul>
-          <button onClick={() => clearList(setList)}>x</button>
-          <h4>Existing Values :</h4>
-          {existingValues.map((item: ExistingValue, index: number) => (
-            <li key={index}>
-              {item.attribute} : {item.value}
-            </li>
           ))}
         </ul>
       )}

@@ -3,18 +3,15 @@ import '../../../styles/components/_upload.scss';
 import { CSVLink } from 'react-csv';
 import Loader from '../../../components/Loader/Loader';
 import UploadModal from './UploadModal';
-import { UploadResult, ExistingValue } from '../types';
 import { uploadFile } from '../api/uploadApi';
 import { AxiosError } from 'axios';
+import useUpload from '../stores/uploadStore';
+import { NotFound } from '../types/upload.schemas';
 
 export default function UploadFeature() {
   const [file, setFile] = useState<File | null>(null);
   const [statusUpload, setStatusUpload] = useState(false);
-  const [list, setList] = useState<UploadResult>({
-    existingValues: [],
-    attributeNotFoundList: [],
-    noExistingAttributes: [],
-  });
+  const { list, setList } = useUpload();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -43,25 +40,30 @@ export default function UploadFeature() {
       console.log(upload);
 
       if (endpoint === 'attributes/values') {
+        console.log(upload);
         if (
-          upload.data.existinValues?.length > 0 ||
-          upload.data.noExistingAttributes?.length > 0
+          upload.existingValues?.length > 0 ||
+          upload.noExistingAttributes?.length > 0
         ) {
-          setList(upload.data);
+          setList(upload);
         }
       }
 
       if (endpoint === 'products/attributes/values') {
-        if (upload.valueNotFoundList?.length > 0) {
+        if (upload.valueNotFoundList !== 'No Missing Values') {
           const notExistingAttributes = upload.valueNotFoundList.map(
-            (item: ExistingValue) => `${item.attribute} : ${item.value}`
+            (item: NotFound) => `${item.attribute} : ${item.value}`
           );
           const attributeNotFoundList = upload.attributeNotFoundList || [];
 
           setList({
             noExistingAttributes: notExistingAttributes,
             attributeNotFoundList,
-            existingValues: [],
+          });
+        } else {
+          setList({
+            noExistingAttributes: [],
+            attributeNotFoundList: [],
           });
         }
       }
@@ -98,14 +100,8 @@ export default function UploadFeature() {
       <h1>Upload data</h1>
       {statusUpload && <Loader />}
       <div className="upload-container">
-        {list?.existingValues.length > 0 ||
-        (list?.noExistingAttributes.length > 0 && !statusUpload) ? (
-          <UploadModal
-            existingValues={list.existingValues}
-            noExistingAttributes={list.noExistingAttributes}
-            attributeNotFoundList={list.attributeNotFoundList}
-            setList={setList}
-          />
+        {list?.noExistingAttributes.length > 0 && !statusUpload ? (
+          <UploadModal />
         ) : null}
 
         {/* forms copied from original component - kept structure and ids */}
