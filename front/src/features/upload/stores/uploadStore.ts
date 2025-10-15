@@ -9,15 +9,17 @@ type UploadStore = {
 
 const useUpload = create<UploadStore>((set) => ({
   list: {
-    noExistingAttributes: [],
+    valueNotFoundList: [],
     attributeNotFoundList: [],
+    productNotFoundList: [],
   },
   setList: (list: UploadListState) => set({ list }),
   resetList: () =>
     set({
       list: {
-        noExistingAttributes: [],
+        valueNotFoundList: [],
         attributeNotFoundList: [],
+        productNotFoundList: [],
       },
     }),
 }));

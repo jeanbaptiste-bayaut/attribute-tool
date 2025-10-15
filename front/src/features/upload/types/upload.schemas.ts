@@ -1,28 +1,25 @@
 import { z } from 'zod';
 
-export const valuesSchema = z.object({
-      attribute_id: z.string(),
-      attribute_name: z.string(),
-      value_name: z.string(),
-    });
+export const ProductsNotFoundSchema = z.string();
 
-export const attributeSchema = z.string();
+export const AttributeNotFoundList = z.string();
 
-export const NotFoundSchema = z.object({
-      attribute: z.string(),
-      value: z.string(),
-    });
+export const ValueNotFoundListSchema = z.object({
+  attribute: z.string(),
+  value: z.string(),
+});
 
 
 
-export type Value = z.infer<typeof valuesSchema>;
-export type Attribute = z.infer<typeof attributeSchema>;
-export type NotFound = z.infer<typeof NotFoundSchema>;
+export type Product = z.infer<typeof ProductsNotFoundSchema>;
+export type Attribute = z.infer<typeof AttributeNotFoundList>;
+export type Value = z.infer<typeof ValueNotFoundListSchema>;
 
 
 export const uploadSchema = z.object({
-  noExistingAttributes: z.array(attributeSchema),
-  attributeNotFoundList: z.array(NotFoundSchema),
+  attributeNotFoundList: z.array(AttributeNotFoundList),
+  valueNotFoundList: z.array(ValueNotFoundListSchema),
+  productNotFoundList: z.array(ProductsNotFoundSchema),
 });
 
 export type UploadListState = z.infer<typeof uploadSchema>;

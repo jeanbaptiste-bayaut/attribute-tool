@@ -6,7 +6,6 @@ import UploadModal from './UploadModal';
 import { uploadFile } from '../api/uploadApi';
 import { AxiosError } from 'axios';
 import useUpload from '../stores/uploadStore';
-import { NotFound } from '../types/upload.schemas';
 
 export default function UploadFeature() {
   const [file, setFile] = useState<File | null>(null);
@@ -51,19 +50,12 @@ export default function UploadFeature() {
 
       if (endpoint === 'products/attributes/values') {
         if (upload.valueNotFoundList !== 'No Missing Values') {
-          const notExistingAttributes = upload.valueNotFoundList.map(
-            (item: NotFound) => `${item.attribute} : ${item.value}`
-          );
-          const attributeNotFoundList = upload.attributeNotFoundList || [];
-
-          setList({
-            noExistingAttributes: notExistingAttributes,
-            attributeNotFoundList,
-          });
+          setList(upload);
         } else {
           setList({
-            noExistingAttributes: [],
-            attributeNotFoundList: [],
+            attributeNotFoundList: upload.attributeNotFoundList || [],
+            valueNotFoundList: [],
+            productNotFoundList: upload.productNotFoundList || [],
           });
         }
       }
@@ -100,7 +92,7 @@ export default function UploadFeature() {
       <h1>Upload data</h1>
       {statusUpload && <Loader />}
       <div className="upload-container">
-        {list?.noExistingAttributes.length > 0 && !statusUpload ? (
+        {list?.attributeNotFoundList.length > 0 && !statusUpload ? (
           <UploadModal />
         ) : null}
 
