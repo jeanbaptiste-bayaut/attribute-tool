@@ -6,7 +6,7 @@ export default function UploadModal() {
 
   return (
     <div className="list-container">
-      {list.valueNotFoundList.length > 0 && (
+      {list?.valueNotFoundList?.length > 0 && (
         <ul>
           <button onClick={() => clearList(setList)}>x</button>
           <h4>Values not existing :</h4>
@@ -17,7 +17,7 @@ export default function UploadModal() {
           ))}
         </ul>
       )}
-      {list.attributeNotFoundList.length > 0 && (
+      {list?.attributeNotFoundList?.length > 0 && (
         <ul>
           <button onClick={() => clearList(setList)}>x</button>
           <h4>Attributes not found :</h4>
@@ -26,7 +26,7 @@ export default function UploadModal() {
           ))}
         </ul>
       )}
-      {list.productNotFoundList.length > 0 && (
+      {list?.productNotFoundList?.length > 0 && (
         <ul>
           <button onClick={() => clearList(setList)}>x</button>
           <h4>Products not found :</h4>

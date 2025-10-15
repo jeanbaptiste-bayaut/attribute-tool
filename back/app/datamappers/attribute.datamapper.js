@@ -37,7 +37,7 @@ export default class AttributeDataMapper extends CoreDatamapper {
       }
 
       const insertQuery = `
-      INSERT INTO attribute (name)
+      INSERT IGNORE INTO attribute (name)
       VALUES (?);
     `;
 
@@ -57,7 +57,7 @@ export default class AttributeDataMapper extends CoreDatamapper {
     const BATCH_SIZE = 500;
     const attributeCache = new Map();
     const valuesToInsert = [];
-    const noExistingAttributes = [];
+    const attributeNotFoundList = [];
 
     try {
       await this.client.query('BEGIN');
@@ -82,7 +82,7 @@ export default class AttributeDataMapper extends CoreDatamapper {
               );
 
               if (result.length === 0) {
-                noExistingAttributes.push(attributeName);
+                attributeNotFoundList.push(attributeName);
                 attributeCache.set(attributeName, null);
                 continue;
               }
@@ -124,7 +124,7 @@ export default class AttributeDataMapper extends CoreDatamapper {
       console.log('File uploaded and processed successfully');
 
       return {
-        noExistingAttributes,
+        attributeNotFoundList,
       };
     } catch (error) {
       await this.client.query('ROLLBACK');

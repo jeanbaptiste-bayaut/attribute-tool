@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import '../../../styles/components/_upload.scss';
 import { CSVLink } from 'react-csv';
 import Loader from '../../../components/Loader/Loader';
@@ -6,11 +6,15 @@ import UploadModal from './UploadModal';
 import { uploadFile } from '../api/uploadApi';
 import { AxiosError } from 'axios';
 import useUpload from '../stores/uploadStore';
+import { UploadListState } from '../types/upload.schemas';
+import { Toast } from 'primereact/toast';
 
 export default function UploadFeature() {
   const [file, setFile] = useState<File | null>(null);
   const [statusUpload, setStatusUpload] = useState(false);
   const { list, setList } = useUpload();
+
+  const toast = useRef<Toast>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -34,39 +38,11 @@ export default function UploadFeature() {
     formData.append(`${endpoint.replace(/\//g, '-')}`, fileParam);
 
     try {
-      const upload = await uploadFile(endpoint, formData);
+      const upload: UploadListState = await uploadFile(endpoint, formData);
 
-      console.log(upload);
-
-      if (endpoint === 'attributes/values') {
-        console.log(upload);
-        if (
-          upload.existingValues?.length > 0 ||
-          upload.noExistingAttributes?.length > 0
-        ) {
-          setList(upload);
-        }
-      }
-
-      if (endpoint === 'products/attributes/values') {
-        if (upload.valueNotFoundList !== 'No Missing Values') {
-          setList(upload);
-        } else {
-          setList({
-            attributeNotFoundList: upload.attributeNotFoundList || [],
-            valueNotFoundList: [],
-            productNotFoundList: upload.productNotFoundList || [],
-          });
-        }
-      }
-
+      setList(upload);
       setStatusUpload(false);
-      alert(`${endpoint} file uploaded successfully \n
-        ${
-          upload.missingStyles
-            ? 'Missing styles: ' + upload.missingStyles.join(', ')
-            : ''
-        }`);
+      showSuccess(endpoint);
       setFile(null);
 
       (
@@ -86,13 +62,25 @@ export default function UploadFeature() {
     }
   };
 
+  const showSuccess = (endpoint: string) => {
+    toast.current?.show({
+      severity: 'success',
+      summary: 'Success',
+      detail: `File ${endpoint} uploaded successfully`,
+      life: 3000,
+    });
+  };
+
   return (
     <div className="upload-content-container">
+      <Toast ref={toast} />
       {/* <MenuBurger /> */}
       <h1>Upload data</h1>
       {statusUpload && <Loader />}
       <div className="upload-container">
-        {list?.attributeNotFoundList.length > 0 && !statusUpload ? (
+        {list?.attributeNotFoundList?.length > 0 ||
+        list?.valueNotFoundList?.length > 0 ||
+        (list?.productNotFoundList?.length > 0 && !statusUpload) ? (
           <UploadModal />
         ) : null}
 

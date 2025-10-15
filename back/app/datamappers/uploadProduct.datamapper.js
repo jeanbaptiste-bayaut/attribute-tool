@@ -197,9 +197,7 @@ export default class UploadProductDataMapper extends CoreDataMapper {
           }
         }
       }
-      !valueNotFoundList.length
-        ? (valueNotFoundList = 'No Missing Values')
-        : valueNotFoundList;
+
       console.log('File uploaded and processed successfully');
       return { valueNotFoundList, attributeNotFoundList, productNotFoundList };
     } catch (error) {
