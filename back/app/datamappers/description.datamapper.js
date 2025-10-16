@@ -36,20 +36,39 @@ export default class DescriptionDataMapper extends CoreDataMapper {
         .pipe(csvParser({ separator: ';' }));
 
       for await (const row of readStream) {
-        // Vérifier si les clés sont présentes dans l'en-tête
-        if (
-          !Object.keys(row).includes(
-            'ModesCode',
-            'LabelWeb',
-            'ActiveLanguage',
-            'DescriptionLong',
-            'Characteristics',
-            'composition',
-            'type'
-          )
-        ) {
+        // Vérifier si les clés correspondent exactement aux en-têtes requis
+        const requiredHeaders = [
+          'ModesCode',
+          'LabelWeb',
+          'ActiveLanguage',
+          'DescriptionLong',
+          'Characteristics',
+          'composition',
+          'type',
+        ];
+        const actualHeaders = Object.keys(row);
+
+        // Vérifier que tous les headers requis sont présents
+        const missingHeaders = requiredHeaders.filter(
+          (header) => !actualHeaders.includes(header)
+        );
+        if (missingHeaders.length > 0) {
           throw new Error(
-            'header must include "ModesCode", "LabelWeb", "ActiveLanguage", "DescriptionLong", "Characteristics", "composition", "type"'
+            `Missing required headers: ${missingHeaders.join(
+              ', '
+            )}. Required headers: ${requiredHeaders.join(', ')}`
+          );
+        }
+
+        // Vérifier qu'il n'y a pas de headers supplémentaires
+        const extraHeaders = actualHeaders.filter(
+          (header) => !requiredHeaders.includes(header)
+        );
+        if (extraHeaders.length > 0) {
+          throw new Error(
+            `Unexpected headers found: ${extraHeaders.join(
+              ', '
+            )}. Only allowed headers: ${requiredHeaders.join(', ')}`
           );
         }
 
@@ -57,7 +76,7 @@ export default class DescriptionDataMapper extends CoreDataMapper {
         results.push(cleanedRow);
       }
 
-      const missingStyles = [];
+      const productNotFoundList = [];
       for (const row of results) {
         const [isStyleExists] = await this.client.query(
           `SELECT id FROM product WHERE style=?`,
@@ -65,17 +84,19 @@ export default class DescriptionDataMapper extends CoreDataMapper {
         );
 
         if (!isStyleExists[0]) {
-          missingStyles.push(row.ModesCode);
+          productNotFoundList.push(row.ModesCode);
           continue;
         }
 
-        const { locale } = this.languageMapping.find(
+        const isLocale = this.languageMapping.find(
           (lang) => lang.code === row.ActiveLanguage
         );
 
-        if (!locale) {
+        if (!isLocale) {
           throw new Error(`Language ${row.ActiveLanguage} not supported`);
         }
+
+        const { locale } = isLocale;
 
         const insertQuery = `
         INSERT INTO ${locale} (label, product_type, product_description, product_characteristic, product_composition, product_id)
@@ -95,12 +116,12 @@ export default class DescriptionDataMapper extends CoreDataMapper {
       await this.client.query('COMMIT'); // Valider la transaction
 
       return {
-        success: 'File uploaded and processed successfully',
-        missingStyles,
+        productNotFoundList,
       };
     } catch (error) {
+      console.log(error);
       await this.client.query('ROLLBACK'); // Annuler la transaction en cas d'erreur
-      throw new Error(error);
+      throw error;
     }
   }
 

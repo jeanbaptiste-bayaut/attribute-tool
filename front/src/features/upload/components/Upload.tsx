@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import '../../../styles/components/_upload.scss';
 import { CSVLink } from 'react-csv';
 import Loader from '../../../components/Loader/Loader';
 import UploadModal from './UploadModal';
-import { UploadResult, ExistingValue } from '../types';
 import { uploadFile } from '../api/uploadApi';
 import { AxiosError } from 'axios';
+import useUpload from '../stores/uploadStore';
+import { UploadListState } from '../types/upload.schemas';
+import { Toast } from 'primereact/toast';
 
 export default function UploadFeature() {
   const [file, setFile] = useState<File | null>(null);
   const [statusUpload, setStatusUpload] = useState(false);
-  const [list, setList] = useState<UploadResult>({
-    existingValues: [],
-    attributeNotFoundList: [],
-    noExistingAttributes: [],
-  });
+  const { list, setList } = useUpload();
+
+  const toast = useRef<Toast>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -38,41 +38,11 @@ export default function UploadFeature() {
     formData.append(`${endpoint.replace(/\//g, '-')}`, fileParam);
 
     try {
-      const upload = await uploadFile(endpoint, formData);
+      const upload: UploadListState = await uploadFile(endpoint, formData);
 
-      console.log(upload);
-
-      if (endpoint === 'attributes/values') {
-        if (
-          upload.data.existinValues?.length > 0 ||
-          upload.data.noExistingAttributes?.length > 0
-        ) {
-          setList(upload.data);
-        }
-      }
-
-      if (endpoint === 'products/attributes/values') {
-        if (upload.valueNotFoundList?.length > 0) {
-          const notExistingAttributes = upload.valueNotFoundList.map(
-            (item: ExistingValue) => `${item.attribute} : ${item.value}`
-          );
-          const attributeNotFoundList = upload.attributeNotFoundList || [];
-
-          setList({
-            noExistingAttributes: notExistingAttributes,
-            attributeNotFoundList,
-            existingValues: [],
-          });
-        }
-      }
-
+      setList(upload);
       setStatusUpload(false);
-      alert(`${endpoint} file uploaded successfully \n
-        ${
-          upload.missingStyles
-            ? 'Missing styles: ' + upload.missingStyles.join(', ')
-            : ''
-        }`);
+      showSuccess(endpoint);
       setFile(null);
 
       (
@@ -92,20 +62,26 @@ export default function UploadFeature() {
     }
   };
 
+  const showSuccess = (endpoint: string) => {
+    toast.current?.show({
+      severity: 'success',
+      summary: 'Success',
+      detail: `File ${endpoint} uploaded successfully`,
+      life: 3000,
+    });
+  };
+
   return (
     <div className="upload-content-container">
+      <Toast ref={toast} />
       {/* <MenuBurger /> */}
       <h1>Upload data</h1>
       {statusUpload && <Loader />}
       <div className="upload-container">
-        {list?.existingValues.length > 0 ||
-        (list?.noExistingAttributes.length > 0 && !statusUpload) ? (
-          <UploadModal
-            existingValues={list.existingValues}
-            noExistingAttributes={list.noExistingAttributes}
-            attributeNotFoundList={list.attributeNotFoundList}
-            setList={setList}
-          />
+        {list?.attributeNotFoundList?.length > 0 ||
+        list?.valueNotFoundList?.length > 0 ||
+        (list?.productNotFoundList?.length > 0 && !statusUpload) ? (
+          <UploadModal />
         ) : null}
 
         {/* forms copied from original component - kept structure and ids */}

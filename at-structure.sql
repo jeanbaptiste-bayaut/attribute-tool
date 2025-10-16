@@ -121,10 +121,12 @@ DROP TABLE IF EXISTS `product_has_attribute`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product_has_attribute` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `product_id` int DEFAULT NULL,
   `attribute_id` int DEFAULT NULL,
   `value_id` int DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
   UNIQUE KEY `unique_attribute_value` (`product_id`,`attribute_id`,`value_id`),
   KEY `fk_pha_attribute` (`attribute_id`),
   KEY `fk_pha_value` (`value_id`),

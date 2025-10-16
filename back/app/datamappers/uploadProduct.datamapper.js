@@ -84,6 +84,7 @@ export default class UploadProductDataMapper extends CoreDataMapper {
       const promises = [];
       let valueNotFoundList = [];
       let attributeNotFoundList = [];
+      let productNotFoundList = [];
 
       await new Promise((resolve, reject) => {
         fs.createReadStream(filePath)
@@ -100,8 +101,7 @@ export default class UploadProductDataMapper extends CoreDataMapper {
                     const id = result[0][0].id;
                     cleanedRow['style_id'] = id;
                   } else {
-                    return;
-                    // throw new Error('No product found for style: ' + row.style);
+                    productNotFoundList.push(row.style);
                   }
                 })
                 .catch((err) => {
@@ -197,11 +197,9 @@ export default class UploadProductDataMapper extends CoreDataMapper {
           }
         }
       }
-      !valueNotFoundList.length
-        ? (valueNotFoundList = 'No Missing Values')
-        : valueNotFoundList;
+
       console.log('File uploaded and processed successfully');
-      return { valueNotFoundList, attributeNotFoundList };
+      return { valueNotFoundList, attributeNotFoundList, productNotFoundList };
     } catch (error) {
       console.error(error);
       throw new Error(error.message);

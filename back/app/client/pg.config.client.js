@@ -11,17 +11,26 @@ if (!fs.existsSync(caPath)) {
   process.exit(1);
 }
 
-const client = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PWD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
-  ssl: {
-    ca: fs.readFileSync(caPath),
-  },
-});
+let client = null;
 
+if (process.env.NODE_ENV === 'production') {
+  client = mysql.createPool({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PWD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+    ssl: {
+      ca: fs.readFileSync(caPath),
+    },
+  });
+} else {
+  client = mysql.createPool({
+    host: '127.0.0.1',
+    user: 'root',
+    database: 'attributetool',
+  });
+}
 async function getConnection() {
   try {
     await client.getConnection();
