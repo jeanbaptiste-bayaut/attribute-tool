@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import {
   patchProductAttributeStatus,
   patchProductStatus,
@@ -17,6 +17,13 @@ const ControlButtons = () => {
   const { setDescription } = useDescription();
 
   const toast = useRef<Toast>(null);
+
+  const { remaining, current, total } = useMemo(() => {
+    const total = products.length;
+    const current = total > 0 ? Math.min(index + 1, total) : 0;
+    const remaining = Math.max(total - current, 0);
+    return { remaining, current, total };
+  }, [products.length, index]);
 
   const submitChanges = () => {
     setIndexImage(0);
@@ -56,6 +63,21 @@ const ControlButtons = () => {
   return (
     <div className="control-buttons">
       <Toast ref={toast} />
+      <div
+        className="remaining-counter"
+        aria-live="polite"
+        aria-atomic="true"
+        title="Produits restants à valider"
+      >
+        <span className="remaining-count">{remaining}</span>
+        <span className="remaining-label"> restants</span>
+        {total > 0 && (
+          <span className="remaining-ratio">
+            {' '}
+            ({current}/{total})
+          </span>
+        )}
+      </div>
       <button className="secondary-btn" onClick={submitChanges}>
         Submit
       </button>

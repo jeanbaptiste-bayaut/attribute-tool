@@ -1,16 +1,17 @@
 import useSeasons from '../stores/useSeasons';
 import useBrands from '../stores/useBrands';
 import useAttributes from '../stores/useAttributes';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getParentTypes, getSeasons } from '../api/get-brands-seasons';
 import { getBrands } from '../api/get-brands-seasons';
 import { getAttributes } from '../api/get-attributes';
 import { getProducts } from '../api/get-products';
 import { Form } from '../types/product.schemas';
 import useProducts from '../stores/useProducts';
-import { useForm } from 'react-hook-form';
+import { FieldErrors, useForm } from 'react-hook-form';
 import { filterProductList } from '../services/filterProductList';
 import useImages from '../stores/useImages';
+import { Toast } from 'primereact/toast';
 
 const ControlForm = () => {
   const { seasons, setAllSeasons } = useSeasons();
@@ -19,6 +20,7 @@ const ControlForm = () => {
   const { setAllProducts } = useProducts();
   const [isLoading, setIsLoading] = useState(true);
   const { setIndexImage } = useImages();
+  const toast = useRef<Toast>(null);
 
   const { register, handleSubmit, watch } = useForm<Form>({
     mode: 'onChange',
@@ -37,8 +39,6 @@ const ControlForm = () => {
       if (selectedBrand && selectedSeason) {
         try {
           const types = await getParentTypes(selectedBrand, selectedSeason);
-
-          console.log(types);
 
           setParentType(types);
         } catch (error) {
@@ -70,6 +70,21 @@ const ControlForm = () => {
     }
   };
 
+  const showToast = () => {
+    toast.current?.show({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Please select a parent type before submitting.',
+      life: 3000,
+    });
+  };
+
+  const onInvalid = (errors: FieldErrors<Form>) => {
+    if (errors.parent_type) {
+      showToast();
+    }
+  };
+
   useEffect(() => {
     // Fetch seasons, brands, attributes from API and set them
     const initializeData = async () => {
@@ -89,10 +104,14 @@ const ControlForm = () => {
 
   return (
     <>
+      <Toast ref={toast} />
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        <form className="control-form" onSubmit={handleSubmit(onSubmit)}>
+        <form
+          className="control-form"
+          onSubmit={handleSubmit(onSubmit, onInvalid)}
+        >
           <select {...register('brand_name', { required: true })}>
             <option value="">Select Brand</option>
             {brands.map((brand, index: number) => (

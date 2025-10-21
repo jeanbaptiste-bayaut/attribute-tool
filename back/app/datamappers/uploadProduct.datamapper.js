@@ -4,9 +4,12 @@ import fs from 'fs';
 
 function cleanKeys(obj) {
   const cleanedObj = {};
+
   for (const key in obj) {
-    const cleanedKey = key.trim().replace(/['"]+/g, ''); // Supprime les apostrophes/guillemets et espaces
-    cleanedObj[cleanedKey] = obj[key];
+    const cleanedKey = key.trim();
+
+    cleanedKey.replace(/['"]+/g, ''); // Supprime les apostrophes/guillemets et espaces
+    cleanedObj[cleanedKey] = obj[cleanedKey].trim().replace(/['"]+/g, '');
   }
   return cleanedObj;
 }
@@ -91,6 +94,7 @@ export default class UploadProductDataMapper extends CoreDataMapper {
           .pipe(csvParser({ separator: ';' }))
           .on('data', (row) => {
             const cleanedRow = cleanKeys(row);
+
             results.push(cleanedRow);
 
             promises.push(

@@ -44,7 +44,7 @@ export default class ValueDataMapper extends CoreDataMapper {
         (
             (
               SELECT value_id FROM product_has_attribute as p
-              WHERE p.attribute_id = 66
+              WHERE p.attribute_id = (SELECT id FROM attribute WHERE name = 'parent_type')
               AND p.product_id IN 
               (
                 (SELECT product_id FROM product_has_attribute

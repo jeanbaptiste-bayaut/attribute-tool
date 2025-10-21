@@ -99,7 +99,7 @@ export default class DescriptionDataMapper extends CoreDataMapper {
         const { locale } = isLocale;
 
         const insertQuery = `
-        INSERT INTO ${locale} (label, product_type, product_description, product_characteristic, product_composition, product_id)
+        INSERT IGNORE INTO ${locale} (label, product_type, product_description, product_characteristic, product_composition, product_id)
         VALUES (?, ?, ?, ?, ?, ?);
       `;
 

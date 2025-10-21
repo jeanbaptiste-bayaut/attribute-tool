@@ -170,6 +170,7 @@ CREATE TABLE comment (
 
 -- Clé unique composite dans la table value
 ALTER TABLE value ADD CONSTRAINT unique_name_attribute UNIQUE (name, attribute_id);
+ALTER TABLE english ADD CONSTRAINT unique_product_locale_en UNIQUE (product_id, locale, label, product_type, product_description, product_characteristic, product_composition);
 
 -- Fin de transaction
 COMMIT;

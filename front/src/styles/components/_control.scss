@@ -240,6 +240,35 @@
 
 // Boutons secondaires
 .control-buttons {
+  .remaining-counter {
+    margin-right: auto; // push buttons to the right
+    background: #fff;
+    border: 2px solid #e1e5e9;
+    border-radius: 12px;
+    padding: 8px 12px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+    .remaining-count {
+      font-size: 18px;
+      font-weight: 800;
+      color: #e53e3e; // red accent for emphasis
+    }
+
+    .remaining-label {
+      font-size: 13px;
+      color: #4a5568;
+      font-weight: 600;
+    }
+
+    .remaining-ratio {
+      font-size: 12px;
+      color: #718096;
+      font-weight: 500;
+    }
+  }
   .secondary-btn {
     background: #f8f9fa;
     color: #667eea;
