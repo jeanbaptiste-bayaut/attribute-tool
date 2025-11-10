@@ -6,7 +6,7 @@ const __dirname = path.resolve();
 let productCache = new Map();
 
 // Fonction pour charger/recharger le CSV
-export async function loadCache(batchSize = 1000) {
+export async function loadCache(batchSize = 5000) {
   const file = fs
     .readdirSync(path.join(__dirname, '/app/data'))
     .find((f) => f.endsWith('.csv'));
