@@ -3,6 +3,7 @@ import path from 'path';
 import dotenv from 'dotenv';
 import fs from 'fs';
 const __dirname = path.resolve();
+
 dotenv.config({ path: path.join(__dirname, '../.env') });
 const caPath = path.join(__dirname, '../certs/ca.pem');
 

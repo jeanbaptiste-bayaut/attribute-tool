@@ -23,8 +23,6 @@ const Images = () => {
       });
   }, [setAllImages, setAllProducts, index, products]);
 
-  console.log(images);
-
   return (
     <div className="control-images">
       <h3>Product Images</h3>

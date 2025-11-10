@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import deleteUploadFiles from './app/utils/deleteUploadFiles.js';
+import { loadCache } from './app/cache/imagesCache.js';
 
 const __dirname = path.resolve();
 dotenv.config({ path: path.join(__dirname, '../.env') });
@@ -21,7 +22,10 @@ setInterval(() => {
 (async () => {
   try {
     await getConnection();
-    console.log('🔍 MYSQL databse connected');
+    console.log('🔍 MYSQL database connected');
+    await loadCache();
+    console.log('🗂️ Image cache loaded');
+
     httpServer.listen(PORT, () => {
       console.log(`🚀 Server launched at http://localhost:${PORT} 🚀`);
     });

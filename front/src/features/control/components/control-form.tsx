@@ -17,7 +17,7 @@ const ControlForm = () => {
   const { seasons, setAllSeasons } = useSeasons();
   const { brands, setAllBrands } = useBrands();
   const { parent_type, setParentType } = useAttributes();
-  const { setAllProducts } = useProducts();
+  const { setProductIndex, setAllProducts } = useProducts();
   const [isLoading, setIsLoading] = useState(true);
   const { setIndexImage } = useImages();
   const toast = useRef<Toast>(null);
@@ -53,6 +53,8 @@ const ControlForm = () => {
 
   const onSubmit = async (data: Form) => {
     setIndexImage(0);
+    setProductIndex(0);
+
     try {
       const fetchedProducts = await getProducts(
         data.brand_name,

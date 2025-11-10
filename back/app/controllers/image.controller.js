@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import csv2json from 'csvtojson';
+import { getProduct } from '../cache/imagesCache.js';
 
 const __dirname = path.resolve();
 
@@ -9,33 +10,17 @@ export default class ImageController {
     const { brand, pattern, color } = req.params;
 
     try {
-      const file = fs
-        .readdirSync(path.join(__dirname, 'app/data'))
-        .find((file) => file.endsWith('.csv'));
+      const product = getProduct(brand, pattern, color);
 
-      const filePath = path.join(__dirname, 'app/data', file);
+      const imageList = [];
 
-      let jsonArray = await csv2json({
-        noheader: false,
-        delimiter: ';',
-      }).fromFile(filePath);
-
-      const productInfo = jsonArray.find(
-        (product) =>
-          product.brand === brand &&
-          product.pattern === pattern &&
-          product.color === color
-      );
-
-      const imagesList = [];
-
-      for (const key in productInfo) {
-        if (key.startsWith('image') && productInfo[key]) {
-          imagesList.push({ name: productInfo[key] });
+      for (const key in product) {
+        if (key.startsWith('image') && product[key]) {
+          imageList.push({ name: product[key] });
         }
       }
 
-      res.json(imagesList);
+      res.json(imageList);
     } catch (error) {
       console.error(error);
       res.status(500).send('Internal server error');
