@@ -19,6 +19,7 @@ const Description = () => {
         console.error('Error fetching description:', error);
       });
   }, [setDescription, index, products]);
+
   return (
     <div className="control-description">
       <h3>Product Info</h3>
