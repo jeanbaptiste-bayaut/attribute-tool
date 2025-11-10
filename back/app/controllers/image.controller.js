@@ -15,38 +15,27 @@ export default class ImageController {
 
       const filePath = path.join(__dirname, 'app/data', file);
 
-      const jsonArray = await csv2json({
+      let jsonArray = await csv2json({
         noheader: false,
         delimiter: ';',
       }).fromFile(filePath);
 
-      jsonArray.forEach((product) => {
-        product['images_name'] = [];
-        for (const key in product) {
-          if (
-            key.includes('image_') &&
-            product[key] !== '' &&
-            key !== 'images_name'
-          ) {
-            product['images_name'].push({ name: product[key] });
-          }
-        }
-
-        for (const key in product) {
-          if (key.includes('image_')) {
-            delete product[key];
-          }
-        }
-      });
-
-      const productInfos = jsonArray.find(
+      const productInfo = jsonArray.find(
         (product) =>
           product.brand === brand &&
           product.pattern === pattern &&
           product.color === color
       );
 
-      res.json(productInfos);
+      const imagesList = [];
+
+      for (const key in productInfo) {
+        if (key.startsWith('image') && productInfo[key]) {
+          imagesList.push({ name: productInfo[key] });
+        }
+      }
+
+      res.json(imagesList);
     } catch (error) {
       console.error(error);
       res.status(500).send('Internal server error');

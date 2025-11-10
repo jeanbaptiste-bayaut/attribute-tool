@@ -19,9 +19,11 @@ export const getImages = async ({ style, brand, color }: FetchImagesProps) => {
         url: `https://images.napali.app/_/${brand}/hires/${style}_${color}.jpg`,
       });
     } else {
-      imageUrls = response.data.images_name.map((image: { name: string }) => {
+      
+      imageUrls = response.data.map((image: { name: string }) => {
         return { url: urlbase + image.name };
       });
+
     }
 
     return imageUrls;
