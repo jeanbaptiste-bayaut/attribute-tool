@@ -42,13 +42,45 @@ export default class ProductDataMapper extends CoreDataMapper {
 
   static async findProductWithAttributeByPk(id) {
     const [result] = await this.client.query(
-      `SELECT product.id as product_id, product.style as product_style, product.name as product_name,
-      attribute.name as attribute_name, value.name as value_name, product.image_url as image_url, product_has_attribute.status as status
-      FROM product
-      JOIN product_has_attribute ON product.id = product_has_attribute.product_id
-      JOIN attribute ON product_has_attribute.attribute_id = attribute.id
-      JOIN value ON product_has_attribute.value_id = value.id
-      WHERE product.id = ?`,
+      `SELECT 
+    product.id AS product_id,
+    product.style AS product_style,
+    product.name AS product_name,
+    attribute.name AS attribute_name,
+    value.name AS value_name,
+    product.image_url AS image_url,
+    product_has_attribute.status AS status
+FROM product
+JOIN product_has_attribute ON product.id = product_has_attribute.product_id
+JOIN attribute ON product_has_attribute.attribute_id = attribute.id
+JOIN value ON product_has_attribute.value_id = value.id
+WHERE product.id = ?
+ORDER BY 
+  CASE 
+        WHEN attribute.name IN (
+            'division',
+            'gender',
+            'age',
+            'category',
+            'parent_type',
+            'subtype',
+            'activity_use'
+        ) THEN 0
+        ELSE 1
+    END,
+    FIELD(
+        attribute.name,
+        'division',
+        'gender',
+        'age',
+        'category',
+        'parent_type',
+        'subtype',
+        'activity_use'
+    ),
+    attribute.name;
+        `,
+
       [id]
     );
 
