@@ -49,8 +49,7 @@ export default class ProductDataMapper extends CoreDataMapper {
     attribute.name AS attribute_name,
     value.name AS value_name,
     product.image_url AS image_url,
-    product_has_attribute.status AS status,
-    product_has_attribute.addAttribute AS addAttribute
+    product_has_attribute.status AS status
 FROM product
 JOIN product_has_attribute ON product.id = product_has_attribute.product_id
 JOIN attribute ON product_has_attribute.attribute_id = attribute.id
