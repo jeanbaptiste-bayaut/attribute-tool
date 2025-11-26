@@ -39,11 +39,20 @@ export const image = z.object({
 
 export type Image = z.infer<typeof image>;
 
+export const valueSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  attribute: z.string(),
+});
+
+export type Value = z.infer<typeof valueSchema>;
+
 export const attributeSchema = z.object({
   attribute_id: z.string(),
   attribute_name: z.string(),
   value_name: z.string(),
   status: z.boolean(),
+  addAttribute: z.string(),
 });
 
 export type Attribute = z.infer<typeof attributeSchema>;

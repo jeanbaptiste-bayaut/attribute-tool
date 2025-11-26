@@ -26,8 +26,29 @@ export default class ProductHasAttributeDataMapper extends CoreDataMapper {
               product.attribute_name,
             ]
           );
-        } else {
-          return;
+        }
+
+        if (product.addAttribute !== 0) {
+          await this.client.query(
+            `
+        UPDATE ${this.tableName}
+        SET additionalValue = ?
+        WHERE product_id = (SELECT id from product WHERE style = ?)
+        AND attribute_id = (SELECT id from attribute WHERE attribute.name = ?)
+        AND value_id = 
+          (SELECT id from value 
+          WHERE value.name = ? 
+          AND value.attribute_id = (SELECT id from attribute WHERE attribute.name = ?)
+          );
+        `,
+            [
+              product.addAttribute,
+              product.product_style,
+              product.attribute_name,
+              product.value_name,
+              product.attribute_name,
+            ]
+          );
         }
       });
 

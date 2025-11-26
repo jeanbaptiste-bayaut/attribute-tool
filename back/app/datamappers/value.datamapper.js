@@ -30,8 +30,11 @@ export default class ValueDataMapper extends CoreDataMapper {
 
   static async findValuesByAttribute(attributeName) {
     const [result] = await this.client.query(
-      `SELECT * FROM value
-      WHERE attribute_id = (SELECT id FROM attribute WHERE name = ?);`,
+      `SELECT value.id as id, value.name as name, attribute.name as attribute 
+      FROM value
+      JOIN attribute ON attribute.id = attribute_id
+      WHERE attribute_id = (SELECT id FROM attribute WHERE name = ?)
+      ;`,
       [attributeName]
     );
     return result;

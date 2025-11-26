@@ -60,7 +60,6 @@
 
 // Formulaire de contrôle
 .control-form {
-  select,
   input {
     padding: 6px 16px;
     border-radius: 10px;
@@ -69,14 +68,46 @@
     font-size: 14px;
     font-weight: 500;
     color: #2d3748;
-    transition: all 0.3s ease;
+    transition: all 0.24s ease;
     min-width: 180px;
 
     &:focus {
       border-color: #4299e1;
       outline: none;
       background: #fff;
-      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.08);
+    }
+
+    &:hover {
+      border-color: #cbd5e0;
+    }
+  }
+
+  /* Modern select styling */
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: 8px 40px 8px 14px; /* leave space for custom arrow */
+    border-radius: 10px;
+    border: 2px solid #e1e5e9;
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 18px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #2d3748;
+    transition: all 0.24s ease;
+    min-width: 180px;
+
+    /* inline SVG chevron as arrow */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+
+    &:focus {
+      border-color: #4299e1;
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.08);
     }
 
     &:hover {
@@ -104,6 +135,30 @@
     &:active {
       transform: translateY(0);
     }
+  }
+}
+
+/* Specific modern select inside attribute list */
+.attribute-list-container select {
+  padding: 6px 34px 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #e6eef8;
+  background: #fff;
+  font-size: 13px;
+  color: #2d3748;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23718596' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+/* small-screen tweak for selects */
+@media (max-width: 768px) {
+  .control-form select,
+  .control-form input {
+    min-width: 100%;
+    width: 100%;
   }
 }
 
@@ -567,4 +622,98 @@
       }
     }
   }
+}
+
+/* Add-checkbox styled as a plus button */
+.cross {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-left: 12px;
+}
+
+.cross input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  margin: 0;
+  z-index: 2;
+  cursor: pointer;
+}
+
+/* visible button */
+.cross .plus {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  position: relative;
+  transition: all 0.18s ease;
+}
+
+/* draw the "+" using two pseudo elements */
+.cross .plus::before,
+.cross .plus::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: #4a5568;
+  transform: translate(-50%, -50%);
+  transition: background 0.18s ease;
+  border-radius: 1px;
+}
+
+.cross .plus::before {
+  width: 60%;
+  height: 2px; /* horizontal bar */
+}
+
+.cross .plus::after {
+  width: 2px;   /* vertical bar */
+  height: 60%;
+}
+
+/* hover / focus states */
+.cross .plus:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e0;
+}
+
+.cross input:focus + .plus {
+  box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.12);
+}
+
+/* checked state : vert pour indiquer ajout */
+.cross input:checked + .plus {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(6, 95, 46, 0.12);
+}
+
+.cross input:checked + .plus::before,
+.cross input:checked + .plus::after {
+  background: #fff;
+}
+
+/* small-screen adjustments */
+@media (max-width: 640px) {
+  .cross {
+    width: 32px;
+    height: 32px;
+  }
+  .cross .plus {
+    width: 24px;
+    height: 24px;
+  }
+  .cross .plus::before { width: 58%; height: 1.8px; }
+  .cross .plus::after { width: 1.8px; height: 58%; }
 }

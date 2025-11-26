@@ -29,6 +29,9 @@ const Description = () => {
         </div>
       ) : description ? (
         <div>
+          <p className="desc-main">
+            Pattern : {products[index]?.product_style}
+          </p>
           <p className="desc-main">Label : {description.label}</p>
           <p className="desc-characteristic">
             Product type : {description.product_type}

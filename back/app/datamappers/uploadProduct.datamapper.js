@@ -170,8 +170,9 @@ export default class UploadProductDataMapper extends CoreDataMapper {
               }
             } else {
               const [valueId] = await this.client.query(
-                `SELECT id FROM value WHERE name = ?;`,
-                [row[key].toLowerCase()]
+                `SELECT id FROM value WHERE name = ?
+                AND attribute_id = ?;`,
+                [row[key].toLowerCase(), attributeId[0].id]
               );
 
               if (!valueId[0] || !valueId[0].id) {

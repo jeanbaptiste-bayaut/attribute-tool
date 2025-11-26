@@ -9,12 +9,14 @@ export default class ExportDataMapper extends CoreDataMapper {
         product.style as style,
         product.name as name,
         attribute.name as attribute,
-        value.name as value
+        value.name as value,
+        product_has_attribute.additionalValue as additionalValue
       FROM product_has_attribute
         JOIN product on product_has_attribute.product_id = product.id
         JOIN attribute on product_has_attribute.attribute_id = attribute.id
         JOIN value on product_has_attribute.value_id = value.id
       WHERE product_has_attribute.status = FALSE
+      OR product_has_attribute.additionalValue IS NOT NULL
         AND product.season=?;`,
       [season]
     );

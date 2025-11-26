@@ -28,6 +28,7 @@ const ControlButtons = () => {
   const submitChanges = () => {
     setIndexImage(0);
     const product = products[index];
+    console.log('ici', attributes);
 
     if (index + 1 < products.length) {
       patchProductAttributeStatus(product, attributes);
