@@ -30,6 +30,7 @@ if (process.env.NODE_ENV === 'production') {
     host: '127.0.0.1',
     user: 'root',
     database: 'attributetool',
+    password: process.env.DB_PWD_DEV,
   });
 }
 async function getConnection() {
