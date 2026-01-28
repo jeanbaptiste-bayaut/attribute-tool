@@ -32,11 +32,11 @@ export default class ProductDataMapper extends CoreDataMapper {
     );
 
     result.map((product) => {
-      product['parent_type'] = parentTypes.find(
+      const resultFind = parentTypes.find(
         (parentType) => product.product_id == parentType.productId
-      ).parentType;
+      );
+      if (resultFind) product['parent_type'] = resultFind.parentType;
     });
-
     return result;
   }
 
