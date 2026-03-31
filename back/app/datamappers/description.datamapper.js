@@ -15,15 +15,6 @@ function cleanKeys(obj) {
 
 export default class DescriptionDataMapper extends CoreDataMapper {
   static tableName = 'description';
-  // static languageMapping = [
-  //   { code: 'master', locale: 'english' },
-  //   { code: 'fr', locale: 'french' },
-  //   { code: 'de', locale: 'german' },
-  //   { code: 'it', locale: 'italian' },
-  //   { code: 'es', locale: 'spanish' },
-  //   { code: 'nl', locale: 'dutch' },
-  //   { code: 'pt', locale: 'portuguese' },
-  // ];
 
   static async uploadDescriptions(filePath) {
     const results = [];
@@ -77,6 +68,7 @@ export default class DescriptionDataMapper extends CoreDataMapper {
       }
 
       const productNotFoundList = [];
+
       for (const row of results) {
         const [isStyleExists] = await this.client.query(
           `SELECT id FROM product WHERE style=?`,
@@ -88,18 +80,8 @@ export default class DescriptionDataMapper extends CoreDataMapper {
           continue;
         }
 
-        const isLocale = this.languageMapping.find(
-          (lang) => lang.code === row.ActiveLanguage
-        );
-
-        if (!isLocale) {
-          throw new Error(`Language ${row.ActiveLanguage} not supported`);
-        }
-
-        const { locale } = isLocale;
-
         const insertQuery = `
-        INSERT IGNORE INTO ${locale} (label, product_type, product_description, product_characteristic, product_composition, product_id)
+        INSERT IGNORE INTO english (label, product_type, product_description, product_characteristic, product_composition, product_id)
         VALUES (?, ?, ?, ?, ?, ?);
       `;
 
